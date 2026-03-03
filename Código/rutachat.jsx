@@ -13,20 +13,24 @@ import {
     View,
 } from 'react-native';
 import { Colors, Radius, Shadow, Spacing } from '../constants/theme';
+import type { UserProfile } from '../types';
 
 interface Message {
     id: string;
     text: string;
     sender: 'user' | 'bot';
 }
+interface RutaChatProps {
+    profile?: UserProfile | null;
+}
 
-export default function RutaChat() {
+export default function RutaChat({ profile }: RutaChatProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState < Message[] > ([]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const slideAnim = useRef(new Animated.Value(300)).current;
-    const scrollViewRef = useRef < ScrollView > (null);
+    const scrollViewRef = useRef<ScrollView>(null);
 
     useEffect(() => {
         if (isOpen && messages.length === 0) {
@@ -89,14 +93,39 @@ export default function RutaChat() {
             let botResponse = "Entiendo perfectamente. ¿En qué más puedo orientarte o qué otra duda tienes en mente?";
             const lower = userMsg.toLowerCase();
 
-            if (lower.includes('gratuidad') || lower.includes('beca')) {
-                botResponse = "Para optar a Gratuidad o Becas, lo vital es llenar tu FUAS a tiempo. No te asustes si el formulario parece largo, ¡es normal! ¿Sabes en qué fechas debes hacerlo?";
+            const rsh = profile ? parseInt(profile.rsh) || 100 : 100;
+            const nem = profile?.nem || "0";
+            const nombre = profile?.nombre || "estudiante";
+            const lc = profile ? parseInt(profile.lc) || 0 : 0;
+            const m1 = profile ? parseInt(profile.m1) || 0 : 0;
+            const prom = (lc + m1) / 2;
+
+            if (lower.includes('gratuidad') || lower.includes('gratis')) {
+                if (profile && rsh <= 60) {
+                    botResponse = `¡Buenas noticias, ${nombre}! Según tu Registro Social de Hogares (${rsh}%), **cumples el principal requisito socioeconómico** para optar a la Gratuidad. Recuerda que debes estudiar en una institución adscrita y llenar el FUAS.`;
+                } else if (profile && rsh > 60) {
+                    botResponse = `Hola ${nombre}. Tu RSH actual es de ${rsh}%, por lo que excedes el 60% requerido para la Gratuidad. ¡Pero no te desanimes! Aún puedes optar a la Beca Bicentenario o al CAE. ¿Quieres que hablemos de eso?`;
+                } else {
+                    botResponse = "Para optar a Gratuidad, necesitas estar dentro del 60% de menores ingresos en el RSH y llenar tu FUAS a tiempo.";
+                }
+            } else if (lower.includes('beca')) {
+                if (profile && rsh <= 70) {
+                    botResponse = `Por tu nivel socioeconómico (${rsh}%), calificas perfectamente para becas de arancel como la Beca Bicentenario o Juan Gómez Millas. Procura tener un buen puntaje PAES para asegurar tu cupo.`;
+                } else {
+                    botResponse = "Las becas Mineduc exigen llenar el FUAS. ¡Te recomiendo hacerlo incluso si crees que no calificas! Siempre hay opciones.";
+                }
             } else if (lower.includes('paes') || lower.includes('puntaje')) {
-                botResponse = "¡Concéntrate en dar tu mejor esfuerzo en la PAES! Recuerda que tu puntaje se pondera distinto según la universidad. Si quieres, podemos usar el simulador para que te hagas una idea de qué carreras están a tu alcance.";
+                if (profile && prom > 0) {
+                    botResponse = `Veo que tu promedio entre Competencia Lectora y Matemática 1 es de **${prom} puntos**. Con ese puntaje puedes usar nuestro Explorador de Carreras para ver opciones reales y comparar los aranceles.`;
+                } else {
+                    botResponse = "¡Concéntrate en dar tu mejor esfuerzo en la PAES! Recuerda que tu puntaje se pondera distinto según la carrera.";
+                }
             } else if (lower.includes('nem') || lower.includes('ranking')) {
-                botResponse = "Tranquilo/a, el NEM y Ranking son solo formas de premiar tu esfuerzo durante la media. Reflejan tu constancia escolar. ¿Tienes claro cómo calcular el tuyo?";
+                botResponse = profile && nem !== "0"
+                    ? `Tienes un NEM registrado de ${nem}. ¡Ese es tu piso de entrada! En carreras de alta demanda escolar, tu desempeño en la media vale oro.`
+                    : "Tranquilo/a, el NEM y Ranking son solo formas de premiar tu esfuerzo durante la media. Reflejan tu constancia escolar. ¿Tienes claro cómo calcular el tuyo?";
             } else if (lower.includes('estrés') || lower.includes('ansiedad') || lower.includes('nervios')) {
-                botResponse = "Es completamente humano sentirse así. La universidad es un gran paso. Recuerda respirar, ir paso a paso y, si lo necesitas, en la sección de 'Red de Apoyo' puedes contactar a orientadores reales dispuestos a escucharte.";
+                botResponse = "Es completamente humano sentirse así. Recuerda respirar, ir paso a paso y, si lo necesitas, en la sección de 'Red de Apoyo' puedes contactar a orientadores reales dispuestos a escucharte.";
             }
 
             setMessages(prev => [...prev, { id: Date.now().toString(), text: botResponse, sender: 'bot' }]);

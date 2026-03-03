@@ -46,7 +46,7 @@ export default function App() {
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
       {renderScreen()}
-      <RutaChat />
+      <RutaChat profile={profile} />
       <NavBar active={screen} onNavigate={setScreen} />
     </SafeAreaView>
   );
