@@ -1,0 +1,258 @@
+/* ==========================================================================
+   1. VARIABLES Y TIPOGRAFÍA
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Colores Identidad */
+  --navy: #0f2547;
+  --blue-action: #2463eb;
+  --blue-light: #eff6ff;
+  
+  /* Colores de Estado */
+  --success-bg: #d1fae5;
+  --success-text: #065f46;
+  --info-bg: #dbeafe;
+  --info-text: #1e40af;
+  --warning-bg: #fef3c7;
+  --warning-text: #92400e;
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
+  --neutral-bg: #f1f5f9;
+  --neutral-text: #475569;
+
+  /* Superficies y Bordes */
+  --white: #ffffff;
+  --bg-page: #f8fafc;
+  --border-color: #e2e8f0;
+  
+  /* Estructura */
+  --radius: 16px;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'DM Sans', 'Inter', sans-serif;
+  background-color: var(--bg-page);
+  color: var(--navy);
+  line-height: 1.6; /* Lectura cómoda solicitada */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   2. CONTENEDORES Y TARJETAS (CARDS)
+   ========================================================================== */
+.section-card, .stat-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  transition: all 0.3s ease; /* Transición suave solicitada */
+  margin-bottom: 1.5rem;
+}
+
+.section-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ==========================================================================
+   3. SISTEMA DE TABLAS (CARRERAS Y COMPARADOR)
+   ========================================================================== */
+.table-wrap {
+  overflow-x: auto; /* Responsivo para móviles solicitado */
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--white);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+table th {
+  background-color: var(--navy); /* Cabeceras Navy solicitadas */
+  color: var(--white); /* Texto blanco solicitado */
+  padding: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+table tr:last-child td {
+  border-bottom: none;
+}
+
+table tr:hover {
+  background-color: var(--blue-light);
+}
+
+/* ==========================================================================
+   4. SISTEMA DE BADGES (ACREDITACIÓN)
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px; /* Bordes redondeados solicitados */
+  font-size: 0.7rem;
+  font-weight: 700; /* Negrita pequeña solicitada */
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.b-exc { background-color: var(--success-bg); color: var(--success-text); }
+.b-ava { background-color: var(--info-bg); color: var(--info-text); }
+.b-bas { background-color: var(--warning-bg); color: var(--warning-text); }
+.b-nac { background-color: var(--neutral-bg); color: var(--neutral-text); }
+
+/* ==========================================================================
+   5. COMPONENTE: CALENDARIO (ANIMACIÓN DE URGENCIA)
+   ========================================================================== */
+.date-marker-urgent {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #ef4444; /* Rojo alerta */
+  position: relative;
+  animation: pulse-urgent 2s infinite; /* Animación de pulso solicitada */
+}
+
+@keyframes pulse-urgent {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    transform: scale(0.95);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    transform: scale(0.95);
+  }
+}
+
+/* ==========================================================================
+   6. COMPONENTE: RUTA CHAT (WIDGET FLOTANTE)
+   ========================================================================== */
+.chat-widget-container {
+  position: fixed; /* Flotante solicitado */
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999; /* Siempre arriba solicitado */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.ruta-chat-window {
+  width: 350px;
+  height: 500px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   7. COMPONENTE: SIMULADOR (WIZARD TRANSITION)
+   ========================================================================== */
+.wizard-step-container {
+  transition: all 0.3s ease; /* Transición suave entre pasos solicitada */
+}
+
+.wizard-option-btn {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--white);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.wizard-option-btn:hover {
+  border-color: var(--blue-action);
+  background-color: var(--blue-light);
+  color: var(--blue-action);
+}
+
+/* ==========================================================================
+   8. UTILIDADES DE ANIMACIÓN (ENTRADA)
+   ========================================================================== */
+.animate-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   9. BOTONES Y FORMULARIOS
+   ========================================================================== */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--blue-action);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(36, 99, 235, 0.3);
+}
+
+.field-input {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  outline: none;
+  font-family: inherit;
+}
+
+.field-input:focus {
+  border-color: var(--blue-action);
+}

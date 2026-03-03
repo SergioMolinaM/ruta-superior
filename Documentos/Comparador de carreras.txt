@@ -1,0 +1,115 @@
+import React, { useState } from 'react';
+
+const ComparadorCarreras = ({ selectedCarreras, onRemove }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Helper para calcular la brecha mensual estimada
+  // En Chile, la brecha suele ser la diferencia entre el Arancel Real y el de Referencia.
+  // Estimamos una brecha del 20% para el ejercicio, dividida en 10 cuotas (marzo-diciembre).
+  const calcularBrechaMensual = (totalAnual) => {
+    const brechaEstimadaAnual = totalAnual * 0.20; 
+    return Math.round(brechaEstimadaAnual / 10);
+  };
+
+  if (selectedCarreras.length === 0) return null;
+
+  return (
+    <div style={styles.floatingContainer}>
+      {/* BARRA DE ACCIÓN */}
+      <div style={styles.actionBar} onClick={() => setIsExpanded(!isExpanded)}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={styles.counter}>{selectedCarreras.length}</span>
+          <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>
+            {isExpanded ? 'Ocultar comparativa' : 'Comparar seleccionadas'}
+          </span>
+        </div>
+        <button style={styles.toggleBtn}>{isExpanded ? '▼' : '▲'}</button>
+      </div>
+
+      {/* SECCIÓN COMPARATIVA */}
+      {isExpanded && (
+        <div className="animate-in" style={styles.compareSection}>
+          <div style={styles.grid}>
+            {[0, 1, 2].map((index) => {
+              const carrera = selectedCarreras[index];
+              const brechaMensual = carrera ? calcularBrechaMensual(carrera.arancel_anual_2026) : 0;
+
+              return (
+                <div key={index} style={styles.column}>
+                  {carrera ? (
+                    <div style={styles.careerCard}>
+                      <button onClick={() => onRemove(carrera.id_carrera)} style={styles.removeBtn}>✕</button>
+                      
+                      <div style={styles.headerInfo}>
+                        <div style={styles.carreraName}>{carrera.nombre_carrera}</div>
+                        <div style={styles.instName}>{carrera.institucion}</div>
+                      </div>
+
+                      {/* DATOS DUROS */}
+                      <div style={styles.dataRow}>
+                        <span style={styles.label}>Arancel Real Anual</span>
+                        <span style={styles.value}>${Math.round(carrera.arancel_anual_2026).toLocaleString('es-CL')}</span>
+                      </div>
+
+                      {/* NUEVA FILA: BRECHA / COPAGO MENSUAL */}
+                      <div style={{ ...styles.dataRow, backgroundColor: '#fff7ed', padding: '8px', borderRadius: '6px' }}>
+                        <span style={{ ...styles.label, color: '#c2410c' }}>Copago Mensual Est. ⚠️</span>
+                        <span style={{ ...styles.value, color: '#ea580c' }}>
+                          ${brechaMensual.toLocaleString('es-CL')} 
+                          <small style={{ fontSize: '0.6rem', display: 'block', fontWeight: '400' }}>*Calculado sobre 10 cuotas (20% brecha est.)</small>
+                        </span>
+                      </div>
+
+                      <div style={styles.dataRow}>
+                        <span style={styles.label}>Duración Real</span>
+                        <span style={styles.value}>{carrera.duracion_real_sem || carrera.duracion_formal_sem} semestres</span>
+                      </div>
+
+                      <div style={styles.dataRow}>
+                        <span style={styles.label}>Empleabilidad 1er año</span>
+                        <span style={styles.value}>{carrera.empleabilidad_1er_anio || '—'}</span>
+                      </div>
+
+                      <div style={styles.dataRow}>
+                        <span style={styles.label}>Acreditación</span>
+                        <span className={`badge ${carrera.nivel_cna === 'Excelencia' ? 'b-exc' : 'b-ava'}`}>
+                          {carrera.nivel_cna}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={styles.emptySlot}>
+                      <span style={{ fontSize: '1.5rem', opacity: 0.2 }}>+</span>
+                      <p style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Añade otra carrera</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const styles = {
+  floatingContainer: { position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '95%', maxWidth: '1000px', zIndex: 900 },
+  actionBar: { backgroundColor: '#0f2547', color: 'white', padding: '12px 25px', borderRadius: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxShadow: '0 10px 25px rgba(0,0,0,0.3)' },
+  counter: { backgroundColor: '#2463eb', width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' },
+  toggleBtn: { background: 'none', border: 'none', color: 'white', fontSize: '0.8rem', cursor: 'pointer' },
+  compareSection: { backgroundColor: 'white', borderRadius: '15px 15px 0 0', padding: '20px', boxShadow: '0 -10px 25px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', borderBottom: 'none' },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' },
+  column: { height: '100%' },
+  careerCard: { backgroundColor: '#f8f9fc', padding: '15px', borderRadius: '10px', position: 'relative', border: '1px solid #e2e6ef', height: '100%', display: 'flex', flexDirection: 'column', gap: '10px' },
+  emptySlot: { border: '2px dashed #e2e8f0', height: '100%', borderRadius: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '350px' },
+  removeBtn: { position: 'absolute', top: '8px', right: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', borderRadius: '50%', width: '20px', height: '20px', fontSize: '0.7rem', cursor: 'pointer' },
+  headerInfo: { paddingBottom: '8px', borderBottom: '1px solid #e2e6ef' },
+  carreraName: { fontSize: '0.85rem', fontWeight: '800', color: '#0f2547', lineHeight: '1.2' },
+  instName: { fontSize: '0.7rem', color: '#64748b' },
+  dataRow: { display: 'flex', flexDirection: 'column' },
+  label: { fontSize: '0.6rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '700', marginBottom: '2px' },
+  value: { fontSize: '0.85rem', fontWeight: '700', color: '#0f1623' },
+};
+
+export default ComparadorCarreras;
