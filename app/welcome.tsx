@@ -155,7 +155,10 @@ export default function WelcomeScreen() {
   };
 
   const handleSubmit = () => {
-    if (validate()) setProfile(profile); router.replace('/(tabs)');
+    if (validate()) {
+      setProfile(profile);
+      router.replace('/(tabs)');
+    }
   };
 
   return (
