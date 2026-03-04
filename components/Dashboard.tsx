@@ -176,13 +176,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     backgroundColor: Colors.warningBg,
-    borderRadius: Radius.xl, // rounded-xl
-    padding: Spacing.lg,     // p-6
+    borderRadius: 24,
+    padding: 24,
     gap: Spacing.md,
     marginBottom: Spacing.md,
     borderWidth: 1,
     borderColor: Colors.warning,
-    ...Shadow.sm,
+    ...Shadow.card,
   },
   alertText: { flex: 1, gap: 4 },
   alertTitle: { ...Typography.h3, fontSize: 15, color: Colors.warningText },
@@ -190,12 +190,12 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: Colors.white,
-    borderRadius: Radius.xl, // rounded-2xl
-    padding: Spacing.lg,     // p-6
+    borderRadius: 24,
+    padding: 24,
     marginBottom: Spacing.lg,
-    ...Shadow.md,            // shadow-md
+    ...Shadow.md,
     borderWidth: 1,
-    borderColor: Colors.slate100, // border-slate-100
+    borderColor: Colors.transparent,
   },
   cardLabel: { ...Typography.label, color: Colors.slate400, marginBottom: Spacing.sm },
   perfilTitulo: { ...Typography.h2, marginBottom: Spacing.sm, fontSize: 18 },
@@ -234,13 +234,13 @@ const styles = StyleSheet.create({
   viaCard: {
     flexDirection: 'row',
     backgroundColor: Colors.white,
-    borderRadius: Radius.xl, // rounded-2xl
-    padding: Spacing.lg,     // p-6
+    borderRadius: 24,
+    padding: 24,
     marginBottom: Spacing.md,
     gap: Spacing.md,
-    ...Shadow.md,            // shadow-md
+    ...Shadow.md,
     borderWidth: 1,
-    borderColor: Colors.slate100,
+    borderColor: Colors.transparent,
   },
   viaIcon: { fontSize: 32, marginTop: 2 },
   viaText: { flex: 1, gap: Spacing.xs },
@@ -259,13 +259,13 @@ const styles = StyleSheet.create({
   quickAction: {
     width: '47%',
     backgroundColor: Colors.white,
-    borderRadius: Radius.xl, // rounded-2xl
-    padding: Spacing.lg,     // p-6
+    borderRadius: 24,
+    padding: 24,
     alignItems: 'center',
     gap: Spacing.xs,
-    ...Shadow.md,            // shadow-md
+    ...Shadow.md,
     borderWidth: 1,
-    borderColor: Colors.slate100,
+    borderColor: Colors.transparent,
   },
   quickEmoji: { fontSize: 28, marginBottom: 4 },
   quickTitle: { ...Typography.h3, fontSize: 15, textAlign: 'center' },
