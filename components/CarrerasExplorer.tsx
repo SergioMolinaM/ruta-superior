@@ -1,6 +1,5 @@
-import { collection, query as firebaseQuery, getDocs, limit, orderBy, where } from 'firebase/firestore';
 import { Check, Layers, Plus, Search, X } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Modal,
   ScrollView,
@@ -10,8 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { CARRERAS } from '../constants/data';
 import { Colors, Radius, Shadow, Spacing, Typography } from '../constants/theme';
-import { db } from '../lib/firebase';
 import type { Carrera, UserProfile } from '../types';
 import ComparadorCarreras from './ComparadorCarreras';
 
@@ -55,45 +54,6 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
   const [expanded, setExpanded] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showComparador, setShowComparador] = useState(false);
-  const [carrerasFirebase, setCarrerasFirebase] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchCarreras() {
-      setLoading(true);
-      try {
-        const qRef = collection(db, 'carreras');
-        let q;
-        if (query.trim().length > 0) {
-          const searchVal = query.trim();
-          q = firebaseQuery(
-            qRef,
-            orderBy('nombre'),
-            where('nombre', '>=', searchVal),
-            where('nombre', '<=', searchVal + '\uf8ff'),
-            limit(20)
-          );
-        } else {
-          q = firebaseQuery(qRef, limit(20));
-        }
-
-        const snapshot = await getDocs(q);
-        const results = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log('carreras de firebase (explorer):', results);
-        setCarrerasFirebase(results);
-      } catch (err) {
-        console.error("Error fetching careers:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    const timer = setTimeout(() => {
-      fetchCarreras();
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [query]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
@@ -104,12 +64,16 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
   };
 
   const filtered = useMemo(() => {
-    return carrerasFirebase.filter(c => {
+    return CARRERAS.filter(c => {
+      const matchQuery =
+        query === '' ||
+        c.nombre.toLowerCase().includes(query.toLowerCase()) ||
+        c.institucion.toLowerCase().includes(query.toLowerCase());
       const matchArea = area === 'Todas' || c.area === area;
       const matchTipo = tipo === 'Todas' || c.tipo === tipo;
-      return matchArea && matchTipo;
+      return matchQuery && matchArea && matchTipo;
     });
-  }, [carrerasFirebase, area, tipo]);
+  }, [query, area, tipo]);
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
@@ -212,7 +176,7 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
             {isOpen && (
               <View style={styles.cardDetail}>
                 <DetailRow label="Puntaje ponderado estimado" value={ponderado > 0 ? String(ponderado) : 'N/A'} highlight />
-                <DetailRow label="Puntaje de Corte" value={carrera.puntaje_corte > 0 ? String(carrera.puntaje_corte) : carrera.corte2025 > 0 ? String(carrera.corte2025) : carrera.corte2024 > 0 ? String(carrera.corte2024) : 'N/A'} />
+                <DetailRow label="Puntaje de Corte" value={(carrera.puntaje_corte ?? 0) > 0 ? String(carrera.puntaje_corte) : (carrera.corte2025 ?? 0) > 0 ? String(carrera.corte2025) : (carrera.corte2024 ?? 0) > 0 ? String(carrera.corte2024) : 'N/A'} />
                 <DetailRow label="Corte 2023" value={carrera.corte2023 > 0 ? String(carrera.corte2023) : 'N/A'} />
                 <DetailRow label="Vacantes" value={String(carrera.vacantes)} />
                 <DetailRow label="Grado" value={carrera.grado} />
@@ -256,7 +220,7 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
         <View style={styles.modalOverlay}>
           <TouchableOpacity style={styles.modalDismiss} activeOpacity={1} onPress={() => setShowComparador(false)} />
           <ComparadorCarreras
-            carreras={carrerasFirebase.filter(c => selectedIds.includes(c.id))}
+            carreras={CARRERAS.filter(c => selectedIds.includes(c.id))}
             onClose={() => setShowComparador(false)}
             onRemove={toggleSelect}
           />

@@ -44,6 +44,12 @@ export interface Carrera {
   arancelReferencia: number; // Arancel de referencia (para brecha)
   acreditacion: number;     // años de acreditación
   gratuidad: boolean;
+  // Fallbacks for Real API
+  universidad?: string;
+  sede?: string;
+  puntaje_corte?: number;
+  corte2025?: number;
+  corte2026?: number;
 }
 
 export interface Institucion {
