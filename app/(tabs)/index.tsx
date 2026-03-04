@@ -20,6 +20,6 @@ export default function IndexScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: Colors.slate50,
+    backgroundColor: '#f1f5f9',
   },
 });

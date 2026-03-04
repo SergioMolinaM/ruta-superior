@@ -2,7 +2,7 @@ import { Bell } from 'lucide-react-native';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { VIAS_INGRESO } from '../constants/data';
-import { Colors, Radius, Shadow, Spacing, Typography } from '../constants/theme';
+import { Colors, Radius, Spacing, Typography } from '../constants/theme';
 import type { Screen, UserProfile } from '../types';
 
 interface DashboardProps {
@@ -164,9 +164,9 @@ function QuickAction({ emoji, title, desc, onPress }: {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: Colors.slate50 },
+  scroll: { flex: 1, backgroundColor: '#f1f5f9' },
   scrollContent: { paddingBottom: Spacing.xxl * 2, paddingTop: Spacing.md },
-  container: { alignSelf: 'center', width: '100%', maxWidth: 448, paddingHorizontal: Spacing.md },
+  container: { alignSelf: 'center', width: '100%', maxWidth: 600, paddingHorizontal: Spacing.md },
 
   header: { marginBottom: Spacing.xl },
   greeting: { ...Typography.h1, marginBottom: 4 },
@@ -175,27 +175,35 @@ const styles = StyleSheet.create({
   alertBanner: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: Colors.warningBg,
-    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
     padding: 24,
     gap: Spacing.md,
-    marginBottom: Spacing.md,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: Colors.warning,
-    ...Shadow.card,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   alertText: { flex: 1, gap: 4 },
   alertTitle: { ...Typography.h3, fontSize: 15, color: Colors.warningText },
   alertDesc: { ...Typography.bodySmall, color: Colors.warningText, lineHeight: 20 },
 
   card: {
-    backgroundColor: Colors.white,
-    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
     padding: 24,
-    marginBottom: Spacing.lg,
-    ...Shadow.md,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: Colors.transparent,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   cardLabel: { ...Typography.label, color: Colors.slate400, marginBottom: Spacing.sm },
   perfilTitulo: { ...Typography.h2, marginBottom: Spacing.sm, fontSize: 18 },
@@ -233,14 +241,18 @@ const styles = StyleSheet.create({
 
   viaCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.white,
-    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
     padding: 24,
-    marginBottom: Spacing.md,
+    marginBottom: 16,
     gap: Spacing.md,
-    ...Shadow.md,
     borderWidth: 1,
-    borderColor: Colors.transparent,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   viaIcon: { fontSize: 32, marginTop: 2 },
   viaText: { flex: 1, gap: Spacing.xs },
@@ -258,14 +270,18 @@ const styles = StyleSheet.create({
   },
   quickAction: {
     width: '47%',
-    backgroundColor: Colors.white,
-    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
     padding: 24,
     alignItems: 'center',
     gap: Spacing.xs,
-    ...Shadow.md,
     borderWidth: 1,
-    borderColor: Colors.transparent,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   quickEmoji: { fontSize: 28, marginBottom: 4 },
   quickTitle: { ...Typography.h3, fontSize: 15, textAlign: 'center' },

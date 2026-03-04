@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Colors, Radius, Shadow, Spacing, Typography } from '../constants/theme';
+import { Colors, Radius, Spacing, Typography } from '../constants/theme';
 import type { UserProfile } from '../types';
 
 
@@ -274,7 +274,7 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: Colors.background },
+  flex: { flex: 1, backgroundColor: '#f1f5f9', maxWidth: 600, alignSelf: 'center', width: '100%' },
   scroll: { flex: 1 },
   content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
 
@@ -301,11 +301,18 @@ const styles = StyleSheet.create({
 
   whyCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.white,
-    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
     padding: 24,
     gap: Spacing.md,
-    ...Shadow.md,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   whyIcon: { fontSize: 26, marginTop: 2 },
   whyText: { flex: 1, gap: 4 },
@@ -313,11 +320,19 @@ const styles = StyleSheet.create({
   whyDesc: { ...Typography.bodySmall, lineHeight: 18 },
 
   infoBanner: {
-    backgroundColor: Colors.primaryLight,
-    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
     padding: 24,
     borderLeftWidth: 4,
     borderLeftColor: Colors.primary,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   infoRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: Spacing.xs },
   infoIcon: {},
@@ -354,11 +369,18 @@ const styles = StyleSheet.create({
   toggleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
     padding: 24,
     gap: Spacing.md,
-    ...Shadow.md,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   toggleText: { flex: 1, gap: 4 },
 
@@ -374,19 +396,17 @@ const styles = StyleSheet.create({
 
   ctaButton: {
     flexDirection: 'row',
-    backgroundColor: Colors.primary,
-    borderRadius: 24,
-    paddingVertical: 18,
-    paddingHorizontal: Spacing.xl,
+    backgroundColor: '#2563eb',
+    borderRadius: 12,
+    padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    ...Shadow.md,
   },
   ctaText: {
-    color: Colors.white,
+    color: '#ffffff',
     fontSize: 17,
-    fontWeight: '700',
+    fontWeight: 'bold',
   },
 
   privacyNote: {
