@@ -14,6 +14,7 @@ import type { Carrera, UserProfile } from '../types';
 
 interface PaesCalculatorProps {
   profile: UserProfile;
+  onBack?: () => void;
 }
 
 type Tab = 'ponderado' | 'brecha';

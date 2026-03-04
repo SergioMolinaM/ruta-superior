@@ -22,11 +22,11 @@ export default function IndexScreen() {
   const renderScreen = () => {
     switch (currentScreen) {
       case 'paes':
-        return <PaesCalculator onBack={() => handleNavigate('dashboard')} />;
+        return <PaesCalculator profile={profile} onBack={() => handleNavigate('dashboard')} />;
       case 'calendario':
-        return <CalendarioScreen onBack={() => handleNavigate('dashboard')} />;
+        return <CalendarioScreen profile={profile} onBack={() => handleNavigate('dashboard')} />;
       case 'beneficios':
-        return <BeneficiosScreen onBack={() => handleNavigate('dashboard')} />;
+        return <BeneficiosScreen profile={profile} onBack={() => handleNavigate('dashboard')} />;
       case 'carreras':
         return <CarrerasExplorer profile={profile} onBack={() => handleNavigate('dashboard')} />;
       case 'dashboard':

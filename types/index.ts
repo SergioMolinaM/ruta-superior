@@ -55,6 +55,16 @@ export interface Carrera {
   puntaje_corte?: number;
   corte2025?: number;
   corte2026?: number;
+  // SIES Data (Employability and Income)
+  empleabilidad_1?: string;
+  empleabilidad_2?: string;
+  ingreso_4?: string;
+  retencion_1?: string;
+  // Financial Data
+  arancel_ref_becas?: number;
+  brecha_becas?: number;
+  roi_alerta?: 'RIESGO_RETORNO_NEGATIVO' | 'ESTABLE' | 'SIN_DATOS_MERCADO';
+  ingreso_mensual_num?: number;
 }
 
 export interface Institucion {

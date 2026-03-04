@@ -7,6 +7,7 @@ import type { Beneficio, UserProfile } from '../types';
 
 interface BeneficiosScreenProps {
   profile: UserProfile;
+  onBack?: () => void;
 }
 
 type CatFilter = 'Todos' | 'Gratuidad' | 'Beca' | 'Crédito' | 'Apoyo';

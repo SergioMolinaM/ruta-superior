@@ -188,14 +188,35 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
                 <DetailRow label="Vacantes" value={String(carrera.vacantes)} />
                 <DetailRow label="Grado" value={carrera.grado} />
                 <DetailRow label="Arancel real anual" value={carrera.arancel ? `$${(carrera.arancel / 1000000).toFixed(2)}M` : 'N/A'} />
+                <DetailRow label="Arancel Ref. (Becas)" value={carrera.arancel_ref_becas ? `$${(carrera.arancel_ref_becas / 1000000).toFixed(2)}M` : 'N/A'} />
                 <DetailRow
-                  label="Brecha estimada"
-                  value={carrera.arancel && carrera.arancelReferencia && (carrera.arancel - carrera.arancelReferencia > 0)
-                    ? `$${((carrera.arancel - carrera.arancelReferencia) / 1000).toFixed(0)}K`
-                    : 'Sin brecha'}
-                  danger={!!(carrera.arancel && carrera.arancelReferencia && (carrera.arancel - carrera.arancelReferencia > 500000))}
+                  label="Brecha Financiera"
+                  value={carrera.brecha_becas && carrera.brecha_becas > 0
+                    ? `$${(carrera.brecha_becas / 1000).toFixed(0)}K`
+                    : 'Cubierto por Gratuidad/Beca'}
+                  danger={(carrera.brecha_becas || 0) > 500000}
                 />
                 <DetailRow label="Acreditación" value={`${carrera.acreditacion || 0} años`} />
+
+                <Text style={styles.coefTitle}>Mercado Laboral (SIES 2025-2026)</Text>
+                <View style={styles.cardDetail}>
+                  <DetailRow
+                    label="Ingreso Promedio (4° año)"
+                    value={carrera.ingreso_4 || 's/i'}
+                    highlight={(carrera.ingreso_4 || '').includes('millón')}
+                  />
+                  <DetailRow label="Empleabilidad 1er año" value={carrera.empleabilidad_1 || 's/i'} />
+                  <DetailRow label="Retención 1er año" value={carrera.retencion_1 || 's/i'} />
+                </View>
+
+                {carrera.roi_alerta === 'RIESGO_RETORNO_NEGATIVO' && (
+                  <View style={styles.roiAlert}>
+                    <Text style={styles.roiAlertTitle}>⚠️ Alerta de Inversión (ROI)</Text>
+                    <Text style={styles.roiAlertText}>
+                      El costo del arancel supera el 20% del ingreso promedio anual estimado para esta carrera. Se recomienda buscar financiamiento o becas adicionales.
+                    </Text>
+                  </View>
+                )}
 
                 <Text style={styles.coefTitle}>Ponderaciones</Text>
                 <View style={styles.coefGrid}>
@@ -270,7 +291,24 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: Colors.primary,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
+  },
+  roiAlert: {
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 8,
+    backgroundColor: '#fee2e2',
+    borderColor: '#ef4444',
+    borderWidth: 1,
+  },
+  roiAlertTitle: {
+    color: '#991b1b',
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  roiAlertText: {
+    color: '#991b1b',
+    fontSize: 12,
   },
   title: { ...Typography.h1, marginBottom: 8 },
 

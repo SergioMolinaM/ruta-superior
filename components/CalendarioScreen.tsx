@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CALENDARIO } from '../constants/data';
 import { Colors, Radius, Shadow, Spacing, Typography } from '../constants/theme';
-import type { CalendarioItem } from '../types';
+import type { CalendarioItem, UserProfile } from '../types';
 
 type CatFilter = 'Todos' | 'PAES' | 'Postulacion' | 'Becas' | 'Resultados' | 'Matricula';
 
@@ -26,6 +26,7 @@ function estadoLabel(estado: CalendarioItem['estado']): { label: string; color: 
 }
 
 interface CalendarioScreenProps {
+  profile: UserProfile;
   onBack?: () => void;
 }
 
