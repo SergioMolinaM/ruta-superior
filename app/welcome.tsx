@@ -119,13 +119,13 @@ const WHY_REGISTER = [
   },
 ];
 
-import { useProfile } from './context';
 import { useRouter } from 'expo-router';
+import { useProfile } from './context';
 
 export default function WelcomeScreen() {
   const { setProfile } = useProfile();
   const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile>({
+  const [profile, setLocalProfile] = useState<UserProfile>({
     nombre: '', nem: '', ranking: '', lc: '', m1: '',
     m2: '', ciencias: '', historia: '',
     rsh: '', region: '', primeraGen: false,
@@ -133,7 +133,7 @@ export default function WelcomeScreen() {
   const [error, setError] = useState('');
 
   const update = (key: keyof UserProfile, value: string | boolean) => {
-    setProfile(prev => ({ ...prev, [key]: value }));
+    setLocalProfile(prev => ({ ...prev, [key]: value }));
     setError('');
   };
 
