@@ -152,12 +152,12 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
                 <View style={{ flex: 1, marginRight: 12 }}>
                   <Text style={styles.carreraNombre} numberOfLines={2}>{carrera.nombre}</Text>
                   <Text style={styles.carreraUniv}>
-                    {carrera.institucion || carrera.universidad || 'Universidad'}
+                    {carrera.universidad || carrera.institucion || 'Universidad'}
                     {carrera.sede ? ` · ${carrera.sede}` : ''}
                   </Text>
                 </View>
                 <View style={styles.corteBadge}>
-                  <Text style={styles.corteText}>Corte: {carrera.corte2025 || carrera.corte2026 || carrera.corte2024 || 'N/A'}</Text>
+                  <Text style={styles.corteText}>Corte: {carrera.puntaje_corte || carrera.corte2025 || carrera.corte2026 || carrera.corte2024 || 'N/A'}</Text>
                 </View>
               </View>
             ))}

@@ -186,10 +186,10 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
             <View style={styles.cardHeader}>
               <View style={styles.cardTitleArea}>
                 <Text style={styles.carreraNombre}>{carrera.nombre}</Text>
-                <Text style={styles.carreraInst}>{carrera.institucion} · {carrera.tipo}</Text>
+                <Text style={styles.carreraInst}>{carrera.universidad || carrera.institucion} · {carrera.tipo || 'Universidad'}</Text>
               </View>
               <View style={{ alignItems: 'flex-end', gap: Spacing.xs }}>
-                <SemaforoTag puntaje={ponderado} corte={carrera.corte2024} />
+                <SemaforoTag puntaje={ponderado} corte={carrera.puntaje_corte || carrera.corte2025 || carrera.corte2024} />
                 <TouchableOpacity
                   style={[styles.selectBtn, selectedIds.includes(carrera.id) && styles.selectBtnActive]}
                   onPress={() => toggleSelect(carrera.id)}
@@ -212,7 +212,7 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
             {isOpen && (
               <View style={styles.cardDetail}>
                 <DetailRow label="Puntaje ponderado estimado" value={ponderado > 0 ? String(ponderado) : 'N/A'} highlight />
-                <DetailRow label="Corte 2024" value={carrera.corte2024 > 0 ? String(carrera.corte2024) : 'N/A'} />
+                <DetailRow label="Puntaje de Corte" value={carrera.puntaje_corte > 0 ? String(carrera.puntaje_corte) : carrera.corte2025 > 0 ? String(carrera.corte2025) : carrera.corte2024 > 0 ? String(carrera.corte2024) : 'N/A'} />
                 <DetailRow label="Corte 2023" value={carrera.corte2023 > 0 ? String(carrera.corte2023) : 'N/A'} />
                 <DetailRow label="Vacantes" value={String(carrera.vacantes)} />
                 <DetailRow label="Grado" value={carrera.grado} />
