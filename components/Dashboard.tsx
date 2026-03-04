@@ -1,8 +1,10 @@
-import { Bell } from 'lucide-react-native';
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { Bell, Search } from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { VIAS_INGRESO } from '../constants/data';
 import { Colors, Radius, Spacing, Typography } from '../constants/theme';
+import { db } from '../lib/firebase';
 import type { Screen, UserProfile } from '../types';
 
 interface DashboardProps {
@@ -61,6 +63,46 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
   const perfil = getPerfil(profile);
   const puntajeEst = calcPuntajeSimple(profile);
 
+  const [carrerasFirebase, setCarrerasFirebase] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    async function fetchCarreras() {
+      setLoading(true);
+      try {
+        const qRef = collection(db, 'carreras');
+        let q;
+        if (searchQuery.trim().length > 0) {
+          const searchVal = searchQuery.trim();
+          q = query(
+            qRef,
+            orderBy('nombre'),
+            where('nombre', '>=', searchVal),
+            where('nombre', '<=', searchVal + '\uf8ff'),
+            limit(20)
+          );
+        } else {
+          q = query(qRef, limit(20));
+        }
+
+        const snapshot = await getDocs(q);
+        const results = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setCarrerasFirebase(results);
+      } catch (err) {
+        console.error("Error fetching careers:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    const timer = setTimeout(() => {
+      fetchCarreras();
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
@@ -69,6 +111,51 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
           <Text style={styles.greeting}>Hola, {profile.nombre || 'estudiante'} 👋</Text>
           <Text style={styles.subtitle}>Tu resumen académico y metas clave</Text>
         </View>
+
+        {/* Buscador de Carreras (Firebase) */}
+        <Text style={styles.sectionTitle}>Buscador de Carreras</Text>
+        <View style={styles.searchBox}>
+          <Search size={18} color={Colors.neutral500} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar por carrera..."
+            placeholderTextColor={Colors.neutral300}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+
+        {loading ? (
+          <View>
+            {[1, 2, 3].map((key) => (
+              <View key={key} style={styles.skeletonCard}>
+                <View style={styles.skeletonTitle} />
+                <View style={styles.skeletonUniv} />
+                <View style={styles.skeletonBadge} />
+              </View>
+            ))}
+          </View>
+        ) : (
+          <View>
+            {carrerasFirebase.map((carrera: any) => (
+              <View key={carrera.id} style={styles.carreraCard}>
+                <View style={{ flex: 1, marginRight: 12 }}>
+                  <Text style={styles.carreraNombre} numberOfLines={2}>{carrera.nombre}</Text>
+                  <Text style={styles.carreraUniv}>
+                    {carrera.institucion || carrera.universidad || 'Universidad'}
+                    {carrera.sede ? ` · ${carrera.sede}` : ''}
+                  </Text>
+                </View>
+                <View style={styles.corteBadge}>
+                  <Text style={styles.corteText}>Corte: {carrera.corte2025 || carrera.corte2026 || carrera.corte || 'N/A'}</Text>
+                </View>
+              </View>
+            ))}
+            {carrerasFirebase.length === 0 && (
+              <Text style={styles.emptyText}>No se encontraron carreras.</Text>
+            )}
+          </View>
+        )}
 
         {/* Alerta FUAS */}
         <View style={styles.alertBanner}>
@@ -286,4 +373,64 @@ const styles = StyleSheet.create({
   quickEmoji: { fontSize: 28, marginBottom: 4 },
   quickTitle: { ...Typography.h3, fontSize: 15, textAlign: 'center' },
   quickDesc: { ...Typography.bodySmall, textAlign: 'center' },
+
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  searchInput: { flex: 1, fontSize: 16, color: '#0f172a' },
+
+  skeletonCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  skeletonTitle: { height: 20, width: '70%', backgroundColor: '#e2e8f0', borderRadius: 6, marginBottom: 8 },
+  skeletonUniv: { height: 14, width: '40%', backgroundColor: '#e2e8f0', borderRadius: 4, marginBottom: 16 },
+  skeletonBadge: { height: 26, width: 90, backgroundColor: '#f1f5f9', borderRadius: 12 },
+
+  carreraCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  carreraNombre: { fontSize: 16, fontWeight: '700', color: '#2563eb', marginBottom: 6 },
+  carreraUniv: { fontSize: 14, color: '#475569' },
+  corteBadge: {
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  corteText: { fontSize: 12, fontWeight: '700', color: '#475569' },
+  emptyText: { textAlign: 'center', color: '#64748b', marginVertical: 16, fontSize: 14 },
 });
