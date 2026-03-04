@@ -61,6 +61,8 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
   const perfil = getPerfil(profile);
   const puntajeEst = calcPuntajeSimple(profile);
 
+  console.log('total carreras cargadas:', CARRERAS.length);
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredCarreras = useMemo(() => {
@@ -83,7 +85,16 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
           <Text style={styles.subtitle}>Tu resumen académico y metas clave</Text>
         </View>
 
-        {/* Buscador de Carreras (Firebase) */}
+        {/* Acciones rápidas (Movidas arriba para jerarquía visual) */}
+        <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
+        <View style={styles.actionsGrid}>
+          <QuickAction emoji="🔍" title="Explorador" desc="Simular puntajes" onPress={() => onNavigate('carreras')} />
+          <QuickAction emoji="💰" title="Beneficios" desc="Catálogo estatal" onPress={() => onNavigate('beneficios')} />
+          <QuickAction emoji="📅" title="Calendario" desc="Fechas clave" onPress={() => onNavigate('calendario')} />
+          <QuickAction emoji="🧮" title="Calculadora" desc="Desglose total" onPress={() => onNavigate('paes')} />
+        </View>
+
+        {/* Buscador de Carreras */}
         <Text style={styles.sectionTitle}>Buscador de Carreras</Text>
         <View style={styles.searchBox}>
           <Search size={18} color={Colors.neutral500} />
@@ -151,15 +162,6 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
           <Text style={styles.puntajeNote}>
             Calculado con ponderación promedio. Cada carrera aplica sus propios coeficientes.
           </Text>
-        </View>
-
-        {/* Acciones rápidas (Movidas arriba para jerarquía visual) */}
-        <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
-        <View style={styles.actionsGrid}>
-          <QuickAction emoji="🔍" title="Explorador" desc="Simular puntajes" onPress={() => onNavigate('carreras')} />
-          <QuickAction emoji="💰" title="Beneficios" desc="Catálogo estatal" onPress={() => onNavigate('beneficios')} />
-          <QuickAction emoji="📅" title="Calendario" desc="Fechas clave" onPress={() => onNavigate('calendario')} />
-          <QuickAction emoji="🧮" title="Calculadora" desc="Desglose total" onPress={() => onNavigate('paes')} />
         </View>
 
         {/* Vías de ingreso */}
