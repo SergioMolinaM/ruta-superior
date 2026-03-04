@@ -19,10 +19,12 @@ export const Colors = {
 
   warning: '#f59e0b', // Amber 500
   warningBg: '#fef3c7',
+  warningLight: '#fef3c7',
   warningText: '#78350f',
 
   danger: '#ef4444', // Red 500
   dangerBg: '#fee2e2',
+  dangerLight: '#fee2e2',
   dangerText: '#7f1d1d',
 
   // Grays (Slate scale for modern, tech feel)

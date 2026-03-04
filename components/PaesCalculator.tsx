@@ -50,8 +50,8 @@ function Semaforo({ puntaje, corte }: { puntaje: number; corte: number }) {
     diff >= 20
       ? `+${diff} pts sobre el corte 2024`
       : diff >= -30
-      ? `${Math.abs(diff)} pts del corte 2024`
-      : `${Math.abs(diff)} pts bajo el corte 2024`;
+        ? `${Math.abs(diff)} pts del corte 2024`
+        : `${Math.abs(diff)} pts bajo el corte 2024`;
   return (
     <View style={[styles.semaforo, { borderColor: color, backgroundColor: color + '18' }]}>
       <Text style={[styles.semaforoLabel, { color }]}>{label}</Text>
@@ -60,7 +60,7 @@ function Semaforo({ puntaje, corte }: { puntaje: number; corte: number }) {
   );
 }
 
-export default function PaesCalculator({ profile }: PaesCalculatorProps) {
+export default function PaesCalculator({ profile, onBack }: PaesCalculatorProps) {
   const [tab, setTab] = useState<Tab>('ponderado');
   const [selectedCarrera, setSelectedCarrera] = useState<Carrera | null>(null);
 
@@ -76,8 +76,15 @@ export default function PaesCalculator({ profile }: PaesCalculatorProps) {
       : null;
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Calculadora PAES</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {onBack && (
+        <TouchableOpacity style={styles.backButton} onPress={onBack}>
+          <Text style={styles.backButtonText}>← Volver al Dashboard</Text>
+        </TouchableOpacity>
+      )}
+      <View style={styles.header}>
+        <Text style={styles.title}>Simulador PAES</Text>
+      </View>
 
       {/* Tabs */}
       <View style={styles.tabs}>
@@ -267,9 +274,23 @@ export default function PaesCalculator({ profile }: PaesCalculatorProps) {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: Colors.background },
+  container: { flex: 1, backgroundColor: Colors.background },
   content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
-  title: { ...Typography.h1, marginBottom: Spacing.md },
+  header: {
+    marginBottom: Spacing.xl,
+  },
+  backButton: {
+    marginBottom: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  backButtonText: {
+    color: Colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  title: {
+    ...Typography.h1,
+  },
 
   tabs: {
     flexDirection: 'row',

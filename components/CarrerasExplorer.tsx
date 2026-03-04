@@ -1,6 +1,6 @@
 import { collection, query as firebaseQuery, getDocs, limit, orderBy, where } from 'firebase/firestore';
 import { Check, Layers, Plus, Search, X } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Modal,
   ScrollView,
@@ -17,6 +17,7 @@ import ComparadorCarreras from './ComparadorCarreras';
 
 interface CarrerasExplorerProps {
   profile: UserProfile;
+  onBack?: () => void;
 }
 
 const AREAS = ['Todas', 'Salud', 'Tecnología', 'Negocios', 'Derecho', 'Educación', 'Ciencias Sociales'];
@@ -47,7 +48,7 @@ function SemaforoTag({ puntaje, corte }: { puntaje: number; corte: number }) {
   return <View style={[styles.tag, { backgroundColor: bg }]}><Text style={[styles.tagText, { color }]}>{label}</Text></View>;
 }
 
-export default function CarrerasExplorer({ profile }: CarrerasExplorerProps) {
+export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerProps) {
   const [query, setQuery] = useState('');
   const [area, setArea] = useState('Todas');
   const [tipo, setTipo] = useState('Todas');
@@ -112,8 +113,13 @@ export default function CarrerasExplorer({ profile }: CarrerasExplorerProps) {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Explorar Carreras</Text>
+      {onBack && (
+        <TouchableOpacity style={styles.backButton} onPress={onBack}>
+          <Text style={styles.backButtonText}>← Volver al Dashboard</Text>
+        </TouchableOpacity>
+      )}
+      <View style={styles.header}>
+        <Text style={styles.title}>Explorador de Carreras</Text>
 
         {/* Buscador */}
         <View style={styles.searchBox}>
@@ -131,131 +137,131 @@ export default function CarrerasExplorer({ profile }: CarrerasExplorerProps) {
             </TouchableOpacity>
           )}
         </View>
-
-        {/* Filtros área */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filters}>
-          {AREAS.map(a => (
-            <TouchableOpacity
-              key={a}
-              style={[styles.filterChip, area === a && styles.filterChipActive]}
-              onPress={() => setArea(a)}
-            >
-              <Text style={[styles.filterText, area === a && styles.filterTextActive]}>{a}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* Filtros tipo */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filters}>
-          {TIPOS.map(t => (
-            <TouchableOpacity
-              key={t}
-              style={[styles.filterChip, tipo === t && styles.filterChipActive]}
-              onPress={() => setTipo(t)}
-            >
-              <Text style={[styles.filterText, tipo === t && styles.filterTextActive]}>{t}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        <Text style={styles.resultCount}>{filtered.length} carrera{filtered.length !== 1 ? 's' : ''}</Text>
-
-        {filtered.length === 0 && (
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>Sin resultados. Ajusta los filtros.</Text>
-          </View>
-        )}
-
-        {filtered.map(carrera => {
-          const ponderado = calcPonderado(carrera, profile);
-          const isOpen = expanded === carrera.id;
-          return (
-            <TouchableOpacity
-              key={carrera.id}
-              style={styles.card}
-              onPress={() => setExpanded(isOpen ? null : carrera.id)}
-              activeOpacity={0.8}
-            >
-              <View style={styles.cardHeader}>
-                <View style={styles.cardTitleArea}>
-                  <Text style={styles.carreraNombre}>{carrera.nombre}</Text>
-                  <Text style={styles.carreraInst}>{carrera.institucion} · {carrera.tipo}</Text>
-                </View>
-                <View style={{ alignItems: 'flex-end', gap: Spacing.xs }}>
-                  <SemaforoTag puntaje={ponderado} corte={carrera.corte2024} />
-                  <TouchableOpacity
-                    style={[styles.selectBtn, selectedIds.includes(carrera.id) && styles.selectBtnActive]}
-                    onPress={() => toggleSelect(carrera.id)}
-                  >
-                    {selectedIds.includes(carrera.id) ? <Check size={14} color={Colors.white} /> : <Plus size={14} color={Colors.primary} />}
-                    <Text style={[styles.selectBtnText, selectedIds.includes(carrera.id) && { color: Colors.white }]}>
-                      {selectedIds.includes(carrera.id) ? 'Añadida' : 'Comparar'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View style={styles.cardMeta}>
-                <MetaChip label="Área" value={carrera.area} />
-                <MetaChip label="Región" value={carrera.region} />
-                <MetaChip label="Duración" value={carrera.duracion} />
-                {carrera.gratuidad && <MetaChip label="Gratuidad" value="✅" highlight />}
-              </View>
-
-              {isOpen && (
-                <View style={styles.cardDetail}>
-                  <DetailRow label="Puntaje ponderado estimado" value={ponderado > 0 ? String(ponderado) : 'N/A'} highlight />
-                  <DetailRow label="Corte 2024" value={carrera.corte2024 > 0 ? String(carrera.corte2024) : 'N/A'} />
-                  <DetailRow label="Corte 2023" value={carrera.corte2023 > 0 ? String(carrera.corte2023) : 'N/A'} />
-                  <DetailRow label="Vacantes" value={String(carrera.vacantes)} />
-                  <DetailRow label="Grado" value={carrera.grado} />
-                  <DetailRow label="Arancel real anual" value={`$${(carrera.arancel / 1000000).toFixed(2)}M`} />
-                  <DetailRow
-                    label="Brecha estimada"
-                    value={carrera.arancel - carrera.arancelReferencia > 0
-                      ? `$${((carrera.arancel - carrera.arancelReferencia) / 1000).toFixed(0)}K`
-                      : 'Sin brecha'}
-                    danger={carrera.arancel - carrera.arancelReferencia > 500000}
-                  />
-                  <DetailRow label="Acreditación" value={`${carrera.acreditacion} años`} />
-
-                  <Text style={styles.coefTitle}>Ponderaciones</Text>
-                  <View style={styles.coefGrid}>
-                    {Object.entries(carrera.coeficientes)
-                      .filter(([, v]) => v > 0)
-                      .map(([k, v]) => (
-                        <View key={k} style={styles.coefChip}>
-                          <Text style={styles.coefKey}>{k.toUpperCase()}</Text>
-                          <Text style={styles.coefVal}>{Math.round(v * 100)}%</Text>
-                        </View>
-                      ))}
-                  </View>
-                </View>
-              )}
-            </TouchableOpacity>
-          );
-        })}
-
-        {selectedIds.length > 0 && (
-          <TouchableOpacity style={styles.fabCompare} onPress={() => setShowComparador(true)}>
-            <Layers color={Colors.white} size={20} />
-            <Text style={{ color: Colors.white, fontWeight: '700', marginLeft: 8 }}>
-              Ver Comparador ({selectedIds.length}/3)
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        <Modal visible={showComparador} animationType="slide" transparent>
-          <View style={styles.modalOverlay}>
-            <TouchableOpacity style={styles.modalDismiss} activeOpacity={1} onPress={() => setShowComparador(false)} />
-            <ComparadorCarreras
-              carreras={carrerasFirebase.filter(c => selectedIds.includes(c.id))}
-              onClose={() => setShowComparador(false)}
-              onRemove={toggleSelect}
-            />
-          </View>
-        </Modal>
       </View>
+
+      {/* Filtros área */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filters}>
+        {AREAS.map(a => (
+          <TouchableOpacity
+            key={a}
+            style={[styles.filterChip, area === a && styles.filterChipActive]}
+            onPress={() => setArea(a)}
+          >
+            <Text style={[styles.filterText, area === a && styles.filterTextActive]}>{a}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      {/* Filtros tipo */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filters}>
+        {TIPOS.map(t => (
+          <TouchableOpacity
+            key={t}
+            style={[styles.filterChip, tipo === t && styles.filterChipActive]}
+            onPress={() => setTipo(t)}
+          >
+            <Text style={[styles.filterText, tipo === t && styles.filterTextActive]}>{t}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <Text style={styles.resultCount}>{filtered.length} carrera{filtered.length !== 1 ? 's' : ''}</Text>
+
+      {filtered.length === 0 && (
+        <View style={styles.empty}>
+          <Text style={styles.emptyText}>Sin resultados. Ajusta los filtros.</Text>
+        </View>
+      )}
+
+      {filtered.map(carrera => {
+        const ponderado = calcPonderado(carrera, profile);
+        const isOpen = expanded === carrera.id;
+        return (
+          <TouchableOpacity
+            key={carrera.id}
+            style={styles.card}
+            onPress={() => setExpanded(isOpen ? null : carrera.id)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardHeader}>
+              <View style={styles.cardTitleArea}>
+                <Text style={styles.carreraNombre}>{carrera.nombre}</Text>
+                <Text style={styles.carreraInst}>{carrera.institucion} · {carrera.tipo}</Text>
+              </View>
+              <View style={{ alignItems: 'flex-end', gap: Spacing.xs }}>
+                <SemaforoTag puntaje={ponderado} corte={carrera.corte2024} />
+                <TouchableOpacity
+                  style={[styles.selectBtn, selectedIds.includes(carrera.id) && styles.selectBtnActive]}
+                  onPress={() => toggleSelect(carrera.id)}
+                >
+                  {selectedIds.includes(carrera.id) ? <Check size={14} color={Colors.white} /> : <Plus size={14} color={Colors.primary} />}
+                  <Text style={[styles.selectBtnText, selectedIds.includes(carrera.id) && { color: Colors.white }]}>
+                    {selectedIds.includes(carrera.id) ? 'Añadida' : 'Comparar'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.cardMeta}>
+              <MetaChip label="Área" value={carrera.area} />
+              <MetaChip label="Región" value={carrera.region} />
+              <MetaChip label="Duración" value={carrera.duracion} />
+              {carrera.gratuidad && <MetaChip label="Gratuidad" value="✅" highlight />}
+            </View>
+
+            {isOpen && (
+              <View style={styles.cardDetail}>
+                <DetailRow label="Puntaje ponderado estimado" value={ponderado > 0 ? String(ponderado) : 'N/A'} highlight />
+                <DetailRow label="Corte 2024" value={carrera.corte2024 > 0 ? String(carrera.corte2024) : 'N/A'} />
+                <DetailRow label="Corte 2023" value={carrera.corte2023 > 0 ? String(carrera.corte2023) : 'N/A'} />
+                <DetailRow label="Vacantes" value={String(carrera.vacantes)} />
+                <DetailRow label="Grado" value={carrera.grado} />
+                <DetailRow label="Arancel real anual" value={`$${(carrera.arancel / 1000000).toFixed(2)}M`} />
+                <DetailRow
+                  label="Brecha estimada"
+                  value={carrera.arancel - carrera.arancelReferencia > 0
+                    ? `$${((carrera.arancel - carrera.arancelReferencia) / 1000).toFixed(0)}K`
+                    : 'Sin brecha'}
+                  danger={carrera.arancel - carrera.arancelReferencia > 500000}
+                />
+                <DetailRow label="Acreditación" value={`${carrera.acreditacion} años`} />
+
+                <Text style={styles.coefTitle}>Ponderaciones</Text>
+                <View style={styles.coefGrid}>
+                  {Object.entries(carrera.coeficientes)
+                    .filter(([, v]) => v > 0)
+                    .map(([k, v]) => (
+                      <View key={k} style={styles.coefChip}>
+                        <Text style={styles.coefKey}>{k.toUpperCase()}</Text>
+                        <Text style={styles.coefVal}>{Math.round(v * 100)}%</Text>
+                      </View>
+                    ))}
+                </View>
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+      })}
+
+      {selectedIds.length > 0 && (
+        <TouchableOpacity style={styles.fabCompare} onPress={() => setShowComparador(true)}>
+          <Layers color={Colors.white} size={20} />
+          <Text style={{ color: Colors.white, fontWeight: '700', marginLeft: 8 }}>
+            Ver Comparador ({selectedIds.length}/3)
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      <Modal visible={showComparador} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity style={styles.modalDismiss} activeOpacity={1} onPress={() => setShowComparador(false)} />
+          <ComparadorCarreras
+            carreras={carrerasFirebase.filter(c => selectedIds.includes(c.id))}
+            onClose={() => setShowComparador(false)}
+            onRemove={toggleSelect}
+          />
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -283,11 +289,19 @@ function DetailRow({ label, value, highlight, danger }: { label: string; value: 
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: Colors.slate50 },
-  scrollContent: { paddingBottom: Spacing.xxl * 3, paddingTop: Spacing.md },
-  container: { alignSelf: 'center', width: '100%', maxWidth: 448, paddingHorizontal: Spacing.md },
-
-  title: { ...Typography.h1, marginBottom: Spacing.md },
+  scroll: { flex: 1, backgroundColor: '#f1f5f9' },
+  scrollContent: { padding: Spacing.md, paddingBottom: Spacing.xxl + 80 },
+  header: { marginBottom: Spacing.md },
+  backButton: {
+    marginBottom: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  backButtonText: {
+    color: Colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  title: { ...Typography.h1, marginBottom: 8 },
 
   searchBox: {
     flexDirection: 'row',

@@ -42,7 +42,7 @@ function ElegibilidadBadge({ estado }: { estado: 'elegible' | 'posible' | 'no' }
   );
 }
 
-export default function BeneficiosScreen({ profile }: BeneficiosScreenProps) {
+export default function BeneficiosScreen({ profile, onBack }: BeneficiosScreenProps) {
   const [cat, setCat] = useState<CatFilter>('Todos');
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -54,8 +54,15 @@ export default function BeneficiosScreen({ profile }: BeneficiosScreenProps) {
   const rsh = parseInt(profile.rsh) || 100;
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Becas y Beneficios</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {onBack && (
+        <TouchableOpacity style={styles.backButton} onPress={onBack}>
+          <Text style={styles.backButtonText}>← Volver al Dashboard</Text>
+        </TouchableOpacity>
+      )}
+      <View style={styles.header}>
+        <Text style={styles.title}>Beneficios Estudiantiles</Text>
+      </View>
 
       {/* Banner FUAS */}
       <View style={styles.fuasBanner}>
@@ -85,8 +92,8 @@ export default function BeneficiosScreen({ profile }: BeneficiosScreenProps) {
           {rsh <= 60
             ? '✅ Calificas para Gratuidad (RSH ≤ 60%) y Becas (RSH ≤ 70%)'
             : rsh <= 70
-            ? '✅ Calificas para Becas (RSH ≤ 70%). Verifica Gratuidad.'
-            : '⚠️ Tu RSH está fuera del rango de Gratuidad y Becas principales. Revisa Crédito CAE.'}
+              ? '✅ Calificas para Becas (RSH ≤ 70%). Verifica Gratuidad.'
+              : '⚠️ Tu RSH está fuera del rango de Gratuidad y Becas principales. Revisa Crédito CAE.'}
         </Text>
       </View>
 
@@ -214,9 +221,19 @@ function getCatColor(cat: string): string {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: Colors.background },
+  container: { flex: 1, backgroundColor: Colors.background },
   content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
-  title: { ...Typography.h1, marginBottom: Spacing.md },
+  header: { marginBottom: Spacing.xl },
+  backButton: {
+    marginBottom: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  backButtonText: {
+    color: Colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  title: { ...Typography.h1, marginBottom: 8 },
 
   fuasBanner: {
     flexDirection: 'row',

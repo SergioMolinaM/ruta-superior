@@ -25,7 +25,11 @@ function estadoLabel(estado: CalendarioItem['estado']): { label: string; color: 
   }[estado];
 }
 
-export default function CalendarioScreen() {
+interface CalendarioScreenProps {
+  onBack?: () => void;
+}
+
+export default function CalendarioScreen({ onBack }: CalendarioScreenProps) {
   const [cat, setCat] = useState<CatFilter>('Todos');
 
   const filtered = CALENDARIO.filter(e => cat === 'Todos' || e.categoria === cat);
@@ -34,8 +38,15 @@ export default function CalendarioScreen() {
   const pasados = filtered.filter(e => e.estado === 'pasado');
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Fechas Clave 2026</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {onBack && (
+        <TouchableOpacity style={styles.backButton} onPress={onBack}>
+          <Text style={styles.backButtonText}>← Volver al Dashboard</Text>
+        </TouchableOpacity>
+      )}
+      <View style={styles.header}>
+        <Text style={styles.title}>Calendario Admisión 2026</Text>
+      </View>
 
       {/* Filtros */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filters}>
@@ -126,7 +137,7 @@ function EventCard({ event }: { event: CalendarioItem }) {
         </View>
         {event.link && (
           <TouchableOpacity
-            onPress={() => Linking.openURL(`https://${event.link}`).catch(() => {})}
+            onPress={() => Linking.openURL(`https://${event.link}`).catch(() => { })}
             style={styles.linkBtn}
           >
             <ExternalLink size={14} color={Colors.primary} />
@@ -151,9 +162,19 @@ function EventCard({ event }: { event: CalendarioItem }) {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: Colors.background },
+  container: { flex: 1, backgroundColor: Colors.background },
   content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
-  title: { ...Typography.h1, marginBottom: Spacing.md },
+  header: { marginBottom: Spacing.xl },
+  backButton: {
+    marginBottom: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  backButtonText: {
+    color: Colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  title: { ...Typography.h1, marginBottom: 8 },
 
   filters: { marginBottom: Spacing.md },
   filterChip: {
