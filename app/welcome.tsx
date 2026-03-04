@@ -170,7 +170,7 @@ export default function WelcomeScreen() {
         {/* Hero */}
         <View style={styles.hero}>
           <Text style={styles.emoji}>🎓</Text>
-          <Text style={styles.heroTitle}>Mi Camino a la U</Text>
+          <Text style={styles.heroTitle}>Rediseño Activo 2026</Text>
           <Text style={styles.heroSub}>
             Tu guía personalizada para el ingreso a la educación superior en Chile 2026
           </Text>
