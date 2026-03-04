@@ -65,10 +65,12 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
 
   const filtered = useMemo(() => {
     return CARRERAS.filter(c => {
+      const n = c.nombre || '';
+      const inst = c.institucion || c.universidad || '';
       const matchQuery =
         query === '' ||
-        c.nombre.toLowerCase().includes(query.toLowerCase()) ||
-        c.institucion.toLowerCase().includes(query.toLowerCase());
+        n.toLowerCase().includes(query.toLowerCase()) ||
+        inst.toLowerCase().includes(query.toLowerCase());
       const matchArea = area === 'Todas' || c.area === area;
       const matchTipo = tipo === 'Todas' || c.tipo === tipo;
       return matchQuery && matchArea && matchTipo;

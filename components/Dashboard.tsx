@@ -68,10 +68,11 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
       return CARRERAS.slice(0, 20); // Limitar a las 20 primeras por defecto para rendimiento
     }
     const q = searchQuery.toLowerCase().trim();
-    return CARRERAS.filter(c =>
-      c.nombre.toLowerCase().includes(q) ||
-      c.institucion.toLowerCase().includes(q)
-    ).slice(0, 20);
+    return CARRERAS.filter(c => {
+      const n = c.nombre || '';
+      const inst = c.institucion || c.universidad || '';
+      return n.toLowerCase().includes(q) || inst.toLowerCase().includes(q);
+    }).slice(0, 20);
   }, [searchQuery]);
 
   return (
