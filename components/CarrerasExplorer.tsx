@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { CARRERAS } from '../constants/data';
+import { CARRERAS_FULL, normalize } from '../constants/data';
 import { Colors, Radius, Shadow, Spacing, Typography } from '../constants/theme';
 import type { Carrera, UserProfile } from '../types';
 import ComparadorCarreras from './ComparadorCarreras';
@@ -19,11 +19,12 @@ interface CarrerasExplorerProps {
   onBack?: () => void;
 }
 
-const AREAS = ['Todas', 'Salud', 'Tecnología', 'Negocios', 'Derecho', 'Educación', 'Ciencias Sociales'];
+const AREAS = ['Todas', 'Salud', 'Tecnología', 'Negocios', 'Derecho', 'Educación', 'Ciencias Sociales', 'General'];
 const TIPOS = ['Todas', 'Universidad', 'IP', 'CFT'];
 
 function calcPonderado(carrera: Carrera, profile: UserProfile): number {
   const c = carrera.coeficientes;
+  if (!c) return 0;
   const nem = parseFloat(profile.nem) || 0;
   const ranking = parseInt(profile.ranking) || 0;
   const lc = parseInt(profile.lc) || 0;
@@ -33,8 +34,8 @@ function calcPonderado(carrera: Carrera, profile: UserProfile): number {
   const historia = parseInt(profile.historia) || 0;
   const nemPts = nem * 100;
   return Math.round(
-    nemPts * c.nem + ranking * c.ranking + lc * c.lc +
-    m1 * c.m1 + m2 * c.m2 + ciencias * c.ciencias + historia * c.historia
+    nemPts * (c.nem || 0) + ranking * (c.ranking || 0) + lc * (c.lc || 0) +
+    m1 * (c.m1 || 0) + m2 * (c.m2 || 0) + ciencias * (c.ciencias || 0) + historia * (c.historia || 0)
   );
 }
 
@@ -64,18 +65,21 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
   };
 
   const filtered = useMemo(() => {
-    return CARRERAS.filter(c => {
-      const n = c?.nombre ? String(c.nombre).toLowerCase() : '';
-      const inst = c?.institucion ? String(c.institucion).toLowerCase() : (c?.universidad ? String(c.universidad).toLowerCase() : '');
-      const searchLower = query.toLowerCase();
+    const q = normalize(query);
+    return CARRERAS_FULL.filter(c => {
+      if (!c) return false;
+      const n = c.nombre_search || normalize(c.nombre);
+      const inst = c.inst_search || normalize(c.institucion || c.universidad);
+      const sede = c.sede_search || normalize(c.sede);
       const matchQuery =
-        query === '' ||
-        n.includes(searchLower) ||
-        inst.includes(searchLower);
+        q === '' ||
+        n.includes(q) ||
+        inst.includes(q) ||
+        sede.includes(q);
       const matchArea = area === 'Todas' || c.area === area;
       const matchTipo = tipo === 'Todas' || c.tipo === tipo;
       return matchQuery && matchArea && matchTipo;
-    });
+    }).slice(0, 50); // Limitar para rendimiento en ScrollView
   }, [query, area, tipo]);
 
   return (
@@ -183,19 +187,19 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
                 <DetailRow label="Corte 2023" value={carrera.corte2023 > 0 ? String(carrera.corte2023) : 'N/A'} />
                 <DetailRow label="Vacantes" value={String(carrera.vacantes)} />
                 <DetailRow label="Grado" value={carrera.grado} />
-                <DetailRow label="Arancel real anual" value={`$${(carrera.arancel / 1000000).toFixed(2)}M`} />
+                <DetailRow label="Arancel real anual" value={carrera.arancel ? `$${(carrera.arancel / 1000000).toFixed(2)}M` : 'N/A'} />
                 <DetailRow
                   label="Brecha estimada"
-                  value={carrera.arancel - carrera.arancelReferencia > 0
+                  value={carrera.arancel && carrera.arancelReferencia && (carrera.arancel - carrera.arancelReferencia > 0)
                     ? `$${((carrera.arancel - carrera.arancelReferencia) / 1000).toFixed(0)}K`
                     : 'Sin brecha'}
-                  danger={carrera.arancel - carrera.arancelReferencia > 500000}
+                  danger={!!(carrera.arancel && carrera.arancelReferencia && (carrera.arancel - carrera.arancelReferencia > 500000))}
                 />
-                <DetailRow label="Acreditación" value={`${carrera.acreditacion} años`} />
+                <DetailRow label="Acreditación" value={`${carrera.acreditacion || 0} años`} />
 
                 <Text style={styles.coefTitle}>Ponderaciones</Text>
                 <View style={styles.coefGrid}>
-                  {Object.entries(carrera.coeficientes)
+                  {carrera.coeficientes && Object.entries(carrera.coeficientes)
                     .filter(([, v]) => v > 0)
                     .map(([k, v]) => (
                       <View key={k} style={styles.coefChip}>
@@ -223,7 +227,7 @@ export default function CarrerasExplorer({ profile, onBack }: CarrerasExplorerPr
         <View style={styles.modalOverlay}>
           <TouchableOpacity style={styles.modalDismiss} activeOpacity={1} onPress={() => setShowComparador(false)} />
           <ComparadorCarreras
-            carreras={CARRERAS.filter(c => selectedIds.includes(c.id))}
+            carreras={CARRERAS_FULL.filter(c => selectedIds.includes(c.id))}
             onClose={() => setShowComparador(false)}
             onRemove={toggleSelect}
           />

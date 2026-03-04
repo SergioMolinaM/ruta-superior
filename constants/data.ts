@@ -4,6 +4,8 @@
 // Última verificación: febrero 2026
 // ============================================================
 
+import CARRERAS_JSON from './carreras.json';
+
 import type {
   Beneficio,
   CalendarioItem,
@@ -11,6 +13,17 @@ import type {
   Institucion,
   ViaIngreso,
 } from '../types';
+
+const CARRERAS_FULL = CARRERAS_JSON as unknown as Carrera[];
+
+const normalize = (str?: string | null) =>
+  String(str || '')
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+export { CARRERAS_FULL, normalize };
 
 // ─── VÍAS DE INGRESO ───────────────────────────────────────
 

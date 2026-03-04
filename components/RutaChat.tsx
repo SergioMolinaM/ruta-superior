@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { CALENDARIO } from '../constants/data';
 import { Colors, Radius, Shadow, Spacing } from '../constants/theme';
 import type { UserProfile } from '../types';
 
@@ -51,22 +52,35 @@ export default function RutaChat({ profile, fullScreen = false }: RutaChatProps)
         let welcomeText = "¡Hola! soy Ruta 👋. Sé que este proceso puede ser estresante, pero te acompañaré desde el principio ¡No te preocupes! ";
 
         try {
-            const response = await fetch('https://caminoalau-api.onrender.com/calendario');
-            const eventos = await response.json();
+            // Intentar fetch pero usar local como fallback
+            let eventos = CALENDARIO;
+            try {
+                const response = await fetch('https://caminoalau-api.onrender.com/calendario');
+                if (response.ok) {
+                    eventos = await response.json();
+                }
+            } catch (e) {
+                console.log('Using local calendar data');
+            }
 
             const hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
 
-            const proximoEvento = eventos.find((evt: any) => new Date(evt.s + 'T00:00:00') >= hoy);
+            // Adaptar formato si es local (mes -> fecha aproximada si necesario)
+            const proximoEvento = eventos.find((evt: any) => {
+                const dateStr = evt.s || (evt.mes ? `2026-${_getMonthNum(evt.mes)}-01` : null);
+                return dateStr && new Date(dateStr + 'T00:00:00') >= hoy;
+            });
 
             if (proximoEvento) {
-                const fechaEvt = new Date(proximoEvento.s + 'T00:00:00');
+                const dateStr = proximoEvento.s || `2026-${_getMonthNum(proximoEvento.mes)}-01`;
+                const fechaEvt = new Date(dateStr + 'T00:00:00');
                 const diffDays = Math.ceil((fechaEvt.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
 
                 if (diffDays === 0) {
                     welcomeText += `Hoy es un día clave: ${proximoEvento.titulo}. respira hondo, asegúrate de tener tus documentos a mano y cuéntame si necesitas ayuda con el paso a paso.`;
-                } else if (diffDays <= 5) {
-                    welcomeText += `Quedan solo ${diffDays} días para ${proximoEvento.titulo}. Es normal sentir algo de ansiedad; ¿quieres que revisemos juntos los requisitos para que vayas con tranquilidad?`;
+                } else if (diffDays <= 7) {
+                    welcomeText += `Faltan pocos días para ${proximoEvento.titulo}. Es normal sentir algo de ansiedad; ¿quieres que revisemos juntos los requisitos para que vayas con tranquilidad?`;
                 } else {
                     welcomeText += "¿Por dónde quieres empezar? Estoy aquí para orientarte sobre becas, gratuidad o comparar opciones.";
                 }
@@ -75,11 +89,16 @@ export default function RutaChat({ profile, fullScreen = false }: RutaChatProps)
             }
         } catch (error) {
             welcomeText += "Estoy lista para ayudarte con tus dudas sobre la universidad. ¿En qué puedo apoyarte hoy?";
-            console.log('Error fetching calendario for RutaChat', error);
+            console.log('Error in initChat', error);
         }
 
         setMessages([{ id: Date.now().toString(), text: welcomeText, sender: 'bot' }]);
         setIsTyping(false);
+    };
+
+    const _getMonthNum = (m: string) => {
+        const months: any = { 'Enero': '01', 'Febrero': '02', 'Marzo': '03', 'Abril': '04', 'Mayo': '05', 'Junio': '06', 'Julio': '07', 'Agosto': '08', 'Septiembre': '09', 'Octubre': '10', 'Noviembre': '11', 'Diciembre': '12' };
+        return months[m] || '01';
     };
 
     const handleSend = () => {

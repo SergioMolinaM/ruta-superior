@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { ArrowRight, CheckCircle2, Info } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
@@ -13,6 +14,7 @@ import {
 } from 'react-native';
 import { Colors, Radius, Spacing, Typography } from '../constants/theme';
 import type { UserProfile } from '../types';
+import { useProfile } from './context';
 
 
 
@@ -119,8 +121,7 @@ const WHY_REGISTER = [
   },
 ];
 
-import { useRouter } from 'expo-router';
-import { useProfile } from './context';
+
 
 export default function WelcomeScreen() {
   const { setProfile } = useProfile();

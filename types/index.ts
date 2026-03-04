@@ -30,8 +30,10 @@ export interface Coeficientes {
 export interface Carrera {
   id: string;
   nombre: string;
+  nombre_search?: string;
   area: string;
   institucion: string;
+  inst_search?: string;
   tipo: 'Universidad' | 'IP' | 'CFT';
   region: string;
   vacantes: number;
@@ -47,6 +49,9 @@ export interface Carrera {
   // Fallbacks for Real API
   universidad?: string;
   sede?: string;
+  sede_search?: string;
+  jornada?: string;
+  alerta_fne?: string;
   puntaje_corte?: number;
   corte2025?: number;
   corte2026?: number;
@@ -88,6 +93,7 @@ export interface CalendarioItem {
   estado: 'pasado' | 'activo' | 'pendiente';
   categoria: 'PAES' | 'Postulacion' | 'Becas' | 'Resultados' | 'Matricula';
   link: string;
+  s?: string;
 }
 
 export interface ViaIngreso {

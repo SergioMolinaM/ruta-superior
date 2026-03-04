@@ -31,7 +31,7 @@ function RootLayoutNav() {
       // Redirect to tabs if profile exists and trying to access welcome
       router.replace('/(tabs)');
     }
-  }, [profile, segments]);
+  }, [profile, segments, router]);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

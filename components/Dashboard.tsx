@@ -1,7 +1,7 @@
 import { Bell, Search } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { CARRERAS, VIAS_INGRESO } from '../constants/data';
+import { CARRERAS_FULL, normalize, VIAS_INGRESO } from '../constants/data';
 import { Colors, Radius, Spacing, Typography } from '../constants/theme';
 import type { Screen, UserProfile } from '../types';
 
@@ -62,16 +62,16 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
   const puntajeEst = calcPuntajeSimple(profile);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [showDebug, setShowDebug] = useState(false);
 
   const filteredCarreras = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return CARRERAS.slice(0, 20); // Limitar a las 20 primeras por defecto para rendimiento
-    }
-    const q = searchQuery.toLowerCase().trim();
-    return CARRERAS.filter(c => {
-      const n = c?.nombre ? String(c.nombre).toLowerCase() : '';
-      const inst = c?.institucion ? String(c.institucion).toLowerCase() : (c?.universidad ? String(c.universidad).toLowerCase() : '');
-      return n.includes(q) || inst.includes(q);
+    const q = normalize(searchQuery);
+    return CARRERAS_FULL.filter(c => {
+      if (!c) return false;
+      const n = c.nombre_search || normalize(c.nombre);
+      const inst = c.inst_search || normalize(c.institucion || c.universidad);
+      const sede = c.sede_search || normalize(c.sede);
+      return n.includes(q) || inst.includes(q) || sede.includes(q);
     }).slice(0, 20);
   }, [searchQuery]);
 
@@ -79,10 +79,24 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
         {/* Saludo */}
-        <View style={styles.header}>
-          <Text style={styles.greeting}>Hola, {profile.nombre || 'estudiante'} 👋</Text>
-          <Text style={styles.subtitle}>Tu resumen académico y metas clave</Text>
-        </View>
+        <TouchableOpacity onPress={() => setShowDebug(!showDebug)}>
+          <View style={styles.header}>
+            <Text style={styles.greeting}>Hola, {profile.nombre || 'estudiante'} 👋</Text>
+            <Text style={styles.subtitle}>Tu resumen académico y metas clave</Text>
+          </View>
+        </TouchableOpacity>
+
+        {showDebug && (
+          <View style={[styles.card, { backgroundColor: '#fef2f2', borderColor: '#fecaca' }]}>
+            <Text style={{ fontWeight: 'bold', color: '#991b1b', marginBottom: 8 }}>DIAGNÓSTICOS DEL SISTEMA</Text>
+            <Text style={{ fontSize: 12, color: '#991b1b' }}>Registros totales: {CARRERAS_FULL.length}</Text>
+            <Text style={{ fontSize: 12, color: '#991b1b' }}>Platform: {JSON.stringify(process.env.NODE_ENV)}</Text>
+            <Text style={{ fontSize: 12, color: '#991b1b' }}>Prueba Periodismo: {CARRERAS_FULL.filter(c => c.nombre_search?.includes('periodismo')).length} encontrados</Text>
+            <TouchableOpacity onPress={() => setShowDebug(false)} style={{ marginTop: 10 }}>
+              <Text style={{ color: '#2563eb', fontWeight: 'bold' }}>Cerrar diagnóstico</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Acciones rápidas (Movidas arriba para jerarquía visual) */}
         <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
@@ -107,22 +121,27 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
         </View>
 
         <View>
-          {filteredCarreras.map((carrera: any) => (
-            <View key={carrera.id} style={styles.carreraCard}>
-              <View style={{ flex: 1, marginRight: 12 }}>
-                <Text style={styles.carreraNombre} numberOfLines={2}>{carrera.nombre}</Text>
-                <Text style={styles.carreraUniv}>
-                  {carrera.universidad || carrera.institucion || 'Universidad'}
-                  {carrera.sede ? ` · ${carrera.sede}` : ''}
-                </Text>
+          {filteredCarreras.map((carrera: any) => {
+            if (!carrera || !carrera.id) return null;
+            return (
+              <View key={carrera.id} style={styles.carreraCard}>
+                <View style={{ flex: 1, marginRight: 12 }}>
+                  <Text style={styles.carreraNombre} numberOfLines={2}>{carrera.nombre || 'Carrera sin nombre'}</Text>
+                  <Text style={styles.carreraUniv}>
+                    {carrera.institucion || carrera.universidad || 'Institución no disponible'}
+                    {carrera.sede ? ` · ${carrera.sede}` : ''}
+                  </Text>
+                </View>
+                <View style={styles.corteBadge}>
+                  <Text style={styles.corteText}>
+                    Corte: {carrera.puntaje_corte || carrera.corte2025 || carrera.corte2026 || carrera.corte2024 || 'N/A'}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.corteBadge}>
-                <Text style={styles.corteText}>Corte: {carrera.puntaje_corte || carrera.corte2025 || carrera.corte2026 || carrera.corte2024 || 'N/A'}</Text>
-              </View>
-            </View>
-          ))}
-          {filteredCarreras.length === 0 && (
-            <Text style={styles.emptyText}>No se encontraron carreras.</Text>
+            );
+          })}
+          {filteredCarreras.length === 0 && searchQuery.trim() !== '' && (
+            <Text style={styles.emptyText}>No se encontraron carreras con "{searchQuery}".</Text>
           )}
         </View>
 
