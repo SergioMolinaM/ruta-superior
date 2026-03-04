@@ -1,10 +1,8 @@
-import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { Bell, Search } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { VIAS_INGRESO } from '../constants/data';
+import { CARRERAS, VIAS_INGRESO } from '../constants/data';
 import { Colors, Radius, Spacing, Typography } from '../constants/theme';
-import { db } from '../lib/firebase';
 import type { Screen, UserProfile } from '../types';
 
 interface DashboardProps {
@@ -63,44 +61,17 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
   const perfil = getPerfil(profile);
   const puntajeEst = calcPuntajeSimple(profile);
 
-  const [carrerasFirebase, setCarrerasFirebase] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    async function fetchCarreras() {
-      setLoading(true);
-      try {
-        const qRef = collection(db, 'carreras');
-        let q;
-        if (searchQuery.trim().length > 0) {
-          const searchVal = searchQuery.trim();
-          q = query(
-            qRef,
-            orderBy('nombre'),
-            where('nombre', '>=', searchVal),
-            where('nombre', '<=', searchVal + '\uf8ff'),
-            limit(20)
-          );
-        } else {
-          q = query(qRef, limit(20));
-        }
-
-        const snapshot = await getDocs(q);
-        const results = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setCarrerasFirebase(results);
-      } catch (err) {
-        console.error("Error fetching careers:", err);
-      } finally {
-        setLoading(false);
-      }
+  const filteredCarreras = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return CARRERAS.slice(0, 20); // Limitar a las 20 primeras por defecto para rendimiento
     }
-
-    const timer = setTimeout(() => {
-      fetchCarreras();
-    }, 400);
-
-    return () => clearTimeout(timer);
+    const q = searchQuery.toLowerCase().trim();
+    return CARRERAS.filter(c =>
+      c.nombre.toLowerCase().includes(q) ||
+      c.institucion.toLowerCase().includes(q)
+    ).slice(0, 20);
   }, [searchQuery]);
 
   return (
@@ -125,37 +96,22 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
           />
         </View>
 
-        {loading ? (
-          <View>
-            {[1, 2, 3].map((key) => (
-              <View key={key} style={styles.skeletonCard}>
-                <View style={styles.skeletonTitle} />
-                <View style={styles.skeletonUniv} />
-                <View style={styles.skeletonBadge} />
+        <View>
+          {filteredCarreras.map((carrera) => (
+            <View key={carrera.id} style={styles.carreraCard}>
+              <View style={{ flex: 1, marginRight: 12 }}>
+                <Text style={styles.carreraNombre} numberOfLines={2}>{carrera.nombre}</Text>
+                <Text style={styles.carreraUniv}>{carrera.institucion} {carrera.tipo === 'Universidad' ? '' : `· ${carrera.tipo}`}</Text>
               </View>
-            ))}
-          </View>
-        ) : (
-          <View>
-            {carrerasFirebase.map((carrera: any) => (
-              <View key={carrera.id} style={styles.carreraCard}>
-                <View style={{ flex: 1, marginRight: 12 }}>
-                  <Text style={styles.carreraNombre} numberOfLines={2}>{carrera.nombre}</Text>
-                  <Text style={styles.carreraUniv}>
-                    {carrera.institucion || carrera.universidad || 'Universidad'}
-                    {carrera.sede ? ` · ${carrera.sede}` : ''}
-                  </Text>
-                </View>
-                <View style={styles.corteBadge}>
-                  <Text style={styles.corteText}>Corte: {carrera.corte2025 || carrera.corte2026 || carrera.corte || 'N/A'}</Text>
-                </View>
+              <View style={styles.corteBadge}>
+                <Text style={styles.corteText}>Corte: {carrera.corte2024 || 'N/A'}</Text>
               </View>
-            ))}
-            {carrerasFirebase.length === 0 && (
-              <Text style={styles.emptyText}>No se encontraron carreras.</Text>
-            )}
-          </View>
-        )}
+            </View>
+          ))}
+          {filteredCarreras.length === 0 && (
+            <Text style={styles.emptyText}>No se encontraron carreras.</Text>
+          )}
+        </View>
 
         {/* Alerta FUAS */}
         <View style={styles.alertBanner}>
