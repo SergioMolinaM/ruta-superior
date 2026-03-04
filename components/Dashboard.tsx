@@ -69,9 +69,9 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
     }
     const q = searchQuery.toLowerCase().trim();
     return CARRERAS.filter(c => {
-      const n = c.nombre || '';
-      const inst = c.institucion || c.universidad || '';
-      return n.toLowerCase().includes(q) || inst.toLowerCase().includes(q);
+      const n = c?.nombre ? String(c.nombre).toLowerCase() : '';
+      const inst = c?.institucion ? String(c.institucion).toLowerCase() : (c?.universidad ? String(c.universidad).toLowerCase() : '');
+      return n.includes(q) || inst.includes(q);
     }).slice(0, 20);
   }, [searchQuery]);
 
