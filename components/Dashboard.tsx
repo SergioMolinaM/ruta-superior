@@ -62,99 +62,81 @@ export default function Dashboard({ profile, onNavigate }: DashboardProps) {
   const puntajeEst = calcPuntajeSimple(profile);
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      {/* Saludo */}
-      <View style={styles.header}>
-        <Text style={styles.greeting}>Hola, {profile.nombre || 'estudiante'} 👋</Text>
-        <Text style={styles.subtitle}>Proceso de Admisión 2026</Text>
-      </View>
-
-      {/* Alerta FUAS */}
-      <View style={styles.alertBanner}>
-        <Bell size={18} color={Colors.warning} />
-        <View style={styles.alertText}>
-          <Text style={styles.alertTitle}>⚠️ FUAS cierra el 12 de marzo 2026</Text>
-          <Text style={styles.alertDesc}>
-            Postula a Gratuidad y Becas en portal.becasycreditos.cl antes de que venza el plazo.
-          </Text>
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+      <View style={styles.container}>
+        {/* Saludo */}
+        <View style={styles.header}>
+          <Text style={styles.greeting}>Hola, {profile.nombre || 'estudiante'} 👋</Text>
+          <Text style={styles.subtitle}>Tu resumen académico y metas clave</Text>
         </View>
-      </View>
 
-      {/* Perfil diagnóstico */}
-      <View style={[styles.card, { borderLeftColor: perfil.color, borderLeftWidth: 4 }]}>
-        <Text style={styles.cardLabel}>Tu diagnóstico</Text>
-        <Text style={[styles.perfilTitulo, { color: perfil.color }]}>{perfil.titulo}</Text>
-        <Text style={styles.perfilDesc}>{perfil.desc}</Text>
-      </View>
-
-      {/* Resumen de puntajes */}
-      <View style={styles.card}>
-        <Text style={styles.cardLabel}>Resumen de puntajes</Text>
-        <View style={styles.puntajesGrid}>
-          <ScoreChip label="NEM" value={profile.nem || '—'} />
-          <ScoreChip label="Ranking" value={profile.ranking || '—'} />
-          <ScoreChip label="LC" value={profile.lc || '—'} />
-          <ScoreChip label="M1" value={profile.m1 || '—'} />
-          {profile.m2 ? <ScoreChip label="M2" value={profile.m2} /> : null}
-          {profile.ciencias ? <ScoreChip label="Ciencias" value={profile.ciencias} /> : null}
-          {profile.historia ? <ScoreChip label="Historia" value={profile.historia} /> : null}
-          <ScoreChip label="RSH %" value={profile.rsh ? `${profile.rsh}%` : '—'} highlight />
-        </View>
-        <Text style={styles.puntajeEst}>
-          Puntaje ponderado estimado (orientativo): <Text style={styles.puntajeNum}>{puntajeEst > 0 ? puntajeEst : '—'}</Text>
-        </Text>
-        <Text style={styles.puntajeNote}>
-          El puntaje real varía según los coeficientes de cada carrera. Úsalo como referencia.
-        </Text>
-      </View>
-
-      {/* Vías de ingreso */}
-      <Text style={styles.sectionTitle}>Vías de ingreso disponibles</Text>
-      {VIAS_INGRESO.map(via => (
-        <View key={via.id} style={styles.viaCard}>
-          <Text style={styles.viaIcon}>{via.icono}</Text>
-          <View style={styles.viaText}>
-            <Text style={styles.viaNombre}>{via.nombre}</Text>
-            <Text style={styles.viaDesc}>{via.desc}</Text>
-            <View style={styles.viaRequisitos}>
-              {via.requisitos.map((r, i) => (
-                <View key={i} style={styles.requisito}>
-                  <Text style={styles.requisitoText}>• {r}</Text>
-                </View>
-              ))}
-            </View>
-            <Text style={styles.viaFuente}>Fuente: {via.fuente}</Text>
+        {/* Alerta FUAS */}
+        <View style={styles.alertBanner}>
+          <Bell size={20} color={Colors.warning} />
+          <View style={styles.alertText}>
+            <Text style={styles.alertTitle}>Formulario FUAS Pendiente</Text>
+            <Text style={styles.alertDesc}>
+              Postula a Gratuidad y Becas en portal.becasycreditos.cl antes del 12 de marzo.
+            </Text>
           </View>
         </View>
-      ))}
 
-      {/* Acciones rápidas */}
-      <Text style={styles.sectionTitle}>Explorar</Text>
-      <View style={styles.actionsGrid}>
-        <QuickAction
-          emoji="🔍"
-          title="Buscar carreras"
-          desc="Con tu puntaje"
-          onPress={() => onNavigate('carreras')}
-        />
-        <QuickAction
-          emoji="💰"
-          title="Ver becas"
-          desc="Según tu RSH"
-          onPress={() => onNavigate('beneficios')}
-        />
-        <QuickAction
-          emoji="📅"
-          title="Fechas clave"
-          desc="2026"
-          onPress={() => onNavigate('calendario')}
-        />
-        <QuickAction
-          emoji="🧮"
-          title="Calculadora"
-          desc="Puntaje PAES"
-          onPress={() => onNavigate('paes')}
-        />
+        {/* Perfil diagnóstico */}
+        <View style={[styles.card, { borderLeftColor: perfil.color, borderLeftWidth: 4 }]}>
+          <Text style={styles.cardLabel}>TU DIAGNÓSTICO FINANCIERO</Text>
+          <Text style={[styles.perfilTitulo, { color: perfil.color }]}>{perfil.titulo}</Text>
+          <Text style={styles.perfilDesc}>{perfil.desc}</Text>
+        </View>
+
+        {/* Resumen de puntajes */}
+        <View style={styles.card}>
+          <Text style={styles.cardLabel}>TU PROGRESO ACADÉMICO</Text>
+          <View style={styles.puntajesGrid}>
+            <ScoreChip label="NEM" value={profile.nem || '—'} />
+            <ScoreChip label="Ranking" value={profile.ranking || '—'} />
+            <ScoreChip label="LC" value={profile.lc || '—'} />
+            <ScoreChip label="M1" value={profile.m1 || '—'} />
+            {profile.m2 ? <ScoreChip label="M2" value={profile.m2} /> : null}
+            {profile.ciencias ? <ScoreChip label="Ciencias" value={profile.ciencias} /> : null}
+            {profile.historia ? <ScoreChip label="Historia" value={profile.historia} /> : null}
+            <ScoreChip label="RSH %" value={profile.rsh ? `${profile.rsh}%` : '—'} highlight />
+          </View>
+          <View style={styles.divider} />
+          <Text style={styles.puntajeEst}>
+            Puntaje base orientativo: <Text style={styles.puntajeNum}>{puntajeEst > 0 ? puntajeEst : '—'}</Text>
+          </Text>
+          <Text style={styles.puntajeNote}>
+            Calculado con ponderación promedio. Cada carrera aplica sus propios coeficientes.
+          </Text>
+        </View>
+
+        {/* Acciones rápidas (Movidas arriba para jerarquía visual) */}
+        <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
+        <View style={styles.actionsGrid}>
+          <QuickAction emoji="🔍" title="Explorador" desc="Simular puntajes" onPress={() => onNavigate('carreras')} />
+          <QuickAction emoji="💰" title="Beneficios" desc="Catálogo estatal" onPress={() => onNavigate('beneficios')} />
+          <QuickAction emoji="📅" title="Calendario" desc="Fechas clave" onPress={() => onNavigate('calendario')} />
+          <QuickAction emoji="🧮" title="Calculadora" desc="Desglose total" onPress={() => onNavigate('paes')} />
+        </View>
+
+        {/* Vías de ingreso */}
+        <Text style={styles.sectionTitle}>Vías de Admisión</Text>
+        {VIAS_INGRESO.map(via => (
+          <View key={via.id} style={styles.viaCard}>
+            <Text style={styles.viaIcon}>{via.icono}</Text>
+            <View style={styles.viaText}>
+              <Text style={styles.viaNombre}>{via.nombre}</Text>
+              <Text style={styles.viaDesc}>{via.desc}</Text>
+              <View style={styles.viaRequisitos}>
+                {via.requisitos.map((r, i) => (
+                  <View key={i} style={styles.requisito}>
+                    <Text style={styles.requisitoText}>• {r}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+        ))}
       </View>
     </ScrollView>
   );
@@ -182,96 +164,110 @@ function QuickAction({ emoji, title, desc, onPress }: {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: Colors.background },
-  content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
+  scroll: { flex: 1, backgroundColor: Colors.slate50 },
+  scrollContent: { paddingBottom: Spacing.xxl * 2, paddingTop: Spacing.md },
+  container: { alignSelf: 'center', width: '100%', maxWidth: 448, paddingHorizontal: Spacing.md },
 
-  header: { marginBottom: Spacing.lg },
+  header: { marginBottom: Spacing.xl },
   greeting: { ...Typography.h1, marginBottom: 4 },
-  subtitle: { ...Typography.body, color: Colors.neutral500 },
+  subtitle: { ...Typography.body, color: Colors.slate500 },
 
   alertBanner: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: Colors.warningLight,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
-    gap: Spacing.sm,
+    backgroundColor: Colors.warningBg,
+    borderRadius: Radius.xl, // rounded-xl
+    padding: Spacing.lg,     // p-6
+    gap: Spacing.md,
     marginBottom: Spacing.md,
-    borderLeftWidth: 4,
-    borderLeftColor: Colors.warning,
+    borderWidth: 1,
+    borderColor: Colors.warning,
+    ...Shadow.sm,
   },
-  alertText: { flex: 1 },
-  alertTitle: { ...Typography.label, color: Colors.warning, marginBottom: 2 },
-  alertDesc: { ...Typography.bodySmall, color: Colors.neutral700, lineHeight: 18 },
+  alertText: { flex: 1, gap: 4 },
+  alertTitle: { ...Typography.h3, fontSize: 15, color: Colors.warningText },
+  alertDesc: { ...Typography.bodySmall, color: Colors.warningText, lineHeight: 20 },
 
   card: {
     backgroundColor: Colors.white,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-    ...Shadow.card,
+    borderRadius: Radius.xl, // rounded-2xl
+    padding: Spacing.lg,     // p-6
+    marginBottom: Spacing.lg,
+    ...Shadow.md,            // shadow-md
+    borderWidth: 1,
+    borderColor: Colors.slate100, // border-slate-100
   },
-  cardLabel: { ...Typography.bodySmall, color: Colors.neutral500, marginBottom: 6 },
-  perfilTitulo: { ...Typography.h3, marginBottom: 6 },
-  perfilDesc: { ...Typography.body, lineHeight: 22 },
+  cardLabel: { ...Typography.label, color: Colors.slate400, marginBottom: Spacing.sm },
+  perfilTitulo: { ...Typography.h2, marginBottom: Spacing.sm, fontSize: 18 },
+  perfilDesc: { ...Typography.body, lineHeight: 24, color: Colors.slate600 },
 
   puntajesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.xs,
-    marginBottom: Spacing.sm,
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   chip: {
-    backgroundColor: Colors.neutral100,
-    borderRadius: Radius.sm,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
+    backgroundColor: Colors.slate50,
+    borderRadius: Radius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     alignItems: 'center',
-    minWidth: 62,
+    minWidth: '30%',
+    flexGrow: 1,
+    borderWidth: 1,
+    borderColor: Colors.slate200,
   },
-  chipHighlight: { backgroundColor: Colors.primaryLight },
-  chipLabel: { fontSize: 10, color: Colors.neutral500, fontWeight: '600' },
-  chipLabelHighlight: { color: Colors.primary },
-  chipValue: { fontSize: 14, fontWeight: '700', color: Colors.neutral900 },
-  chipValueHighlight: { color: Colors.primary },
-  puntajeEst: { ...Typography.bodySmall, marginTop: Spacing.xs },
-  puntajeNum: { fontWeight: '700', color: Colors.primary },
-  puntajeNote: { ...Typography.bodySmall, color: Colors.neutral500, marginTop: 2 },
+  chipHighlight: { backgroundColor: Colors.primaryLight, borderColor: Colors.primaryLight },
+  chipLabel: { fontSize: 11, color: Colors.slate500, fontWeight: '600', textTransform: 'uppercase' },
+  chipLabelHighlight: { color: Colors.primaryDark },
+  chipValue: { fontSize: 16, fontWeight: '700', color: Colors.slate900, marginTop: 2 },
+  chipValueHighlight: { color: Colors.primaryDark },
 
-  sectionTitle: { ...Typography.h3, marginBottom: Spacing.sm, marginTop: Spacing.xs },
+  divider: { height: 1, backgroundColor: Colors.slate100, marginVertical: Spacing.md },
+  puntajeEst: { ...Typography.body, fontWeight: '600' },
+  puntajeNum: { fontWeight: '800', color: Colors.primary, fontSize: 18 },
+  puntajeNote: { ...Typography.bodySmall, color: Colors.slate400, marginTop: Spacing.xs },
+
+  sectionTitle: { ...Typography.h2, marginBottom: Spacing.md, marginTop: Spacing.sm },
 
   viaCard: {
     flexDirection: 'row',
     backgroundColor: Colors.white,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
-    marginBottom: Spacing.sm,
-    gap: Spacing.sm,
-    ...Shadow.card,
+    borderRadius: Radius.xl, // rounded-2xl
+    padding: Spacing.lg,     // p-6
+    marginBottom: Spacing.md,
+    gap: Spacing.md,
+    ...Shadow.md,            // shadow-md
+    borderWidth: 1,
+    borderColor: Colors.slate100,
   },
-  viaIcon: { fontSize: 28, marginTop: 2 },
-  viaText: { flex: 1, gap: 4 },
-  viaNombre: { ...Typography.h3 },
-  viaDesc: { ...Typography.body, lineHeight: 20 },
-  viaRequisitos: { marginTop: 4 },
+  viaIcon: { fontSize: 32, marginTop: 2 },
+  viaText: { flex: 1, gap: Spacing.xs },
+  viaNombre: { ...Typography.h3, color: Colors.slate900 },
+  viaDesc: { ...Typography.body, lineHeight: 22 },
+  viaRequisitos: { marginTop: Spacing.xs, gap: 4 },
   requisito: {},
-  requisitoText: { ...Typography.bodySmall, lineHeight: 18, color: Colors.neutral700 },
-  viaFuente: { ...Typography.bodySmall, color: Colors.primary, marginTop: 4 },
+  requisitoText: { ...Typography.bodySmall, lineHeight: 18, color: Colors.slate500 },
 
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.sm,
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
   },
   quickAction: {
     width: '47%',
     backgroundColor: Colors.white,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
-    gap: 4,
-    ...Shadow.card,
+    borderRadius: Radius.xl, // rounded-2xl
+    padding: Spacing.lg,     // p-6
+    alignItems: 'center',
+    gap: Spacing.xs,
+    ...Shadow.md,            // shadow-md
+    borderWidth: 1,
+    borderColor: Colors.slate100,
   },
-  quickEmoji: { fontSize: 24 },
-  quickTitle: { ...Typography.h3, fontSize: 14 },
-  quickDesc: { ...Typography.bodySmall },
+  quickEmoji: { fontSize: 28, marginBottom: 4 },
+  quickTitle: { ...Typography.h3, fontSize: 15, textAlign: 'center' },
+  quickDesc: { ...Typography.bodySmall, textAlign: 'center' },
 });

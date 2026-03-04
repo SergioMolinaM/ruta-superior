@@ -14,9 +14,7 @@ import {
 import { Colors, Radius, Shadow, Spacing, Typography } from '../constants/theme';
 import type { UserProfile } from '../types';
 
-interface WelcomeScreenProps {
-  onComplete: (profile: UserProfile) => void;
-}
+
 
 interface FieldMeta {
   key: keyof Omit<UserProfile, 'primeraGen'>;
@@ -121,7 +119,12 @@ const WHY_REGISTER = [
   },
 ];
 
-export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
+import { useProfile } from './context';
+import { useRouter } from 'expo-router';
+
+export default function WelcomeScreen() {
+  const { setProfile } = useProfile();
+  const router = useRouter();
   const [profile, setProfile] = useState<UserProfile>({
     nombre: '', nem: '', ranking: '', lc: '', m1: '',
     m2: '', ciencias: '', historia: '',
@@ -151,7 +154,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   };
 
   const handleSubmit = () => {
-    if (validate()) onComplete(profile);
+    if (validate()) setProfile(profile); router.replace('/(tabs)');
   };
 
   return (
@@ -395,3 +398,4 @@ const styles = StyleSheet.create({
   },
   privacyText: { ...Typography.bodySmall, color: Colors.neutral500 },
 });
+

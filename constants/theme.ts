@@ -1,70 +1,139 @@
 // ============================================================
-// TEMA VISUAL — Mi Camino a la U
+// TEMA VISUAL — Tailwind Inspired Design System
 // ============================================================
 
 export const Colors = {
-  primary: '#1B4FD8',      // Azul institucional
-  primaryDark: '#1338A8',
-  primaryLight: '#EEF2FF',
-  secondary: '#059669',    // Verde éxito
-  secondaryLight: '#ECFDF5',
-  warning: '#D97706',      // Ámbar alerta
-  warningLight: '#FFFBEB',
-  danger: '#DC2626',       // Rojo error/brecha
-  dangerLight: '#FEF2F2',
-  neutral900: '#111827',
-  neutral700: '#374151',
-  neutral500: '#6B7280',
-  neutral300: '#D1D5DB',
-  neutral100: '#F3F4F6',
-  white: '#FFFFFF',
-  background: '#F8FAFC',
+  // Brand - Violeta Tech (Indigo 500 base)
+  primary: '#6366f1',
+  primaryDark: '#4f46e5',
+  primaryLight: '#e0e7ff',
 
-  // Legacy Identity Colors (App.css)
-  navy: '#0f2547',
-  blueAction: '#2463eb',
-  blueLightApp: '#eff6ff',
+  // Accents
+  secondary: '#0ea5e9', // Sky 500 para acentos secundarios
+  secondaryLight: '#e0f2fe',
+
+  // System
+  success: '#10b981', // Emerald 500
   successBg: '#d1fae5',
-  successText: '#065f46',
-  infoBg: '#dbeafe',
-  infoText: '#1e40af',
-  warningBgApp: '#fef3c7',
-  warningTextApp: '#92400e',
-  dangerBgApp: '#fee2e2',
-  dangerTextApp: '#991b1b',
+  successText: '#064e3b',
+
+  warning: '#f59e0b', // Amber 500
+  warningBg: '#fef3c7',
+  warningText: '#78350f',
+
+  danger: '#ef4444', // Red 500
+  dangerBg: '#fee2e2',
+  dangerText: '#7f1d1d',
+
+  // Grays (Slate scale for modern, tech feel)
+  slate50: '#f8fafc',  // Background principal
+  slate100: '#f1f5f9', // Background secundario / Bordes sutiles
+  slate200: '#e2e8f0', // Bordes divisorios
+  slate300: '#cbd5e1', // Borders activos o disables
+  slate400: '#94a3b8', // Iconos inactivos
+  slate500: '#64748b', // Textos secundarios (body small)
+  slate600: '#475569', // Textos body
+  slate700: '#334155', // Subtítulos
+  slate800: '#1e293b', // Títulos secundarios
+  slate900: '#0f172a', // Titulares principales (negro suave)
+
+  white: '#ffffff',
+  transparent: 'transparent',
+
+  // Legacy aliases to prevent sudden breakages before full refactoring
+  background: '#f8fafc',
+  navy: '#0f172a', // Aliased to slate-900
+  neutral900: '#0f172a',
+  neutral700: '#334155',
+  neutral500: '#64748b',
+  neutral300: '#cbd5e1',
+  neutral100: '#f1f5f9',
 };
 
-export const Typography = {
-  h1: { fontSize: 26, fontWeight: '700' as const, color: Colors.neutral900 },
-  h2: { fontSize: 20, fontWeight: '700' as const, color: Colors.neutral900 },
-  h3: { fontSize: 16, fontWeight: '600' as const, color: Colors.neutral900 },
-  body: { fontSize: 14, color: Colors.neutral700 },
-  bodySmall: { fontSize: 12, color: Colors.neutral500 },
-  label: { fontSize: 13, fontWeight: '600' as const, color: Colors.neutral700 },
-};
-
+// Spacing system based on 4px grid (Tailwind scale)
 export const Spacing = {
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
+  xs: 4,     // p-1
+  sm: 8,     // p-2
+  md: 16,    // p-4
+  lg: 24,    // p-6
+  xl: 32,    // p-8
+  xxl: 48,   // p-12
 };
 
 export const Radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  full: 999,
+  sm: 4,     // rounded-sm
+  md: 8,     // rounded-md
+  lg: 12,    // rounded-lg
+  xl: 16,    // rounded-2xl
+  full: 9999,// rounded-full
 };
 
 export const Shadow = {
-  card: {
+  sm: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  md: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  lg: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  card: { // Default shadow for surfaces
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
     elevation: 3,
   },
+};
+
+export const Typography = {
+  h1: {
+    fontSize: 24, // text-2xl 
+    fontWeight: '700' as const, // font-bold
+    color: Colors.slate900,
+  },
+  h2: {
+    fontSize: 20, // text-xl
+    fontWeight: '700' as const, // font-bold
+    color: Colors.slate900,
+  },
+  h3: {
+    fontSize: 18, // text-lg
+    fontWeight: '600' as const, // font-semibold
+    color: Colors.slate800,
+  },
+  body: {
+    fontSize: 16, // text-base
+    color: Colors.slate600,
+    lineHeight: 24,
+  },
+  bodySmall: {
+    fontSize: 14, // text-sm
+    color: Colors.slate500,
+    lineHeight: 20,
+  },
+  label: {
+    fontSize: 12, // text-xs
+    fontWeight: '600' as const,
+    color: Colors.slate600,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  },
+};
+
+export const Layout = {
+  maxWidth: 448, // max-w-md
 };

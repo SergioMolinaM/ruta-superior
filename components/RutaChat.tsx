@@ -22,10 +22,11 @@ interface Message {
 }
 interface RutaChatProps {
     profile?: UserProfile | null;
+    fullScreen?: boolean;
 }
 
-export default function RutaChat({ profile }: RutaChatProps) {
-    const [isOpen, setIsOpen] = useState(false);
+export default function RutaChat({ profile, fullScreen = false }: RutaChatProps) {
+    const [isOpen, setIsOpen] = useState(fullScreen);
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -134,7 +135,7 @@ export default function RutaChat({ profile }: RutaChatProps) {
         }, 1200);
     };
 
-    if (!isOpen) {
+    if (!isOpen && !fullScreen) {
         return (
             <TouchableOpacity
                 style={styles.fab}
@@ -146,8 +147,10 @@ export default function RutaChat({ profile }: RutaChatProps) {
         );
     }
 
+    const containerStyle = fullScreen ? styles.fullScreenContainer : [styles.chatWindow, { transform: [{ translateY: slideAnim }] }];
+
     return (
-        <Animated.View style={[styles.chatWindow, { transform: [{ translateY: slideAnim }] }]}>
+        <Animated.View style={containerStyle as any}>
             <View style={styles.header}>
                 <View style={styles.headerTitle}>
                     <View style={styles.avatar}>
@@ -158,9 +161,11 @@ export default function RutaChat({ profile }: RutaChatProps) {
                         <Text style={styles.headerStatus}>Tu orientadora virtual</Text>
                     </View>
                 </View>
-                <TouchableOpacity onPress={() => setIsOpen(false)}>
-                    <X color={Colors.white} size={24} />
-                </TouchableOpacity>
+                {!fullScreen && (
+                    <TouchableOpacity onPress={() => setIsOpen(false)}>
+                        <X color={Colors.white} size={24} />
+                    </TouchableOpacity>
+                )}
             </View>
 
             <ScrollView
@@ -214,7 +219,7 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 30,
-        backgroundColor: Colors.blueAction,
+        backgroundColor: Colors.primary,
         justifyContent: 'center',
         alignItems: 'center',
         ...Shadow.card,
@@ -236,8 +241,12 @@ const styles = StyleSheet.create({
         elevation: 10,
         zIndex: 100,
     },
+    fullScreenContainer: {
+        flex: 1,
+        backgroundColor: Colors.white,
+    },
     header: {
-        backgroundColor: Colors.navy,
+        backgroundColor: Colors.primaryDark,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -254,7 +263,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: Colors.blueLightApp,
+        backgroundColor: Colors.primaryLight,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -264,7 +273,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     headerStatus: {
-        color: Colors.blueLightApp,
+        color: Colors.primaryLight,
         fontSize: 12,
     },
     messagesContainer: {
@@ -278,7 +287,7 @@ const styles = StyleSheet.create({
     },
     bubbleUser: {
         alignSelf: 'flex-end',
-        backgroundColor: Colors.blueAction,
+        backgroundColor: Colors.primary,
         borderBottomRightRadius: 4,
     },
     bubbleBot: {
@@ -314,7 +323,7 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: Colors.blueAction,
+        backgroundColor: Colors.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
